@@ -5,8 +5,6 @@ Analiza los check-ins históricos y calcula correlaciones estadísticas entre
 las variables de bienestar usando el coeficiente de Pearson.
 """
 
-from scipy import stats
-import numpy as np
 from app.core.database import get_supabase_client
 
 P_VALUE_THRESHOLD = 0.05
@@ -70,6 +68,8 @@ def generar_insight_texto(var_x: str, var_y: str, r: float) -> str:
 
 
 def calcular_correlaciones_usuario(user_id: str, dias: int = 30) -> dict:
+    import numpy as np
+    from scipy import stats
     supabase = get_supabase_client()
 
     response = supabase.table("checkins") \
@@ -163,6 +163,8 @@ def calcular_correlaciones_con_lag(user_id: str, dias: int = 30, max_lag: int = 
     Calcula correlaciones incluyendo efectos retrasados (lag 0-3 días).
     Detecta patrones como 'meditación hoy → mejor sueño mañana'.
     """
+    import numpy as np
+    from scipy import stats
     supabase = get_supabase_client()
     response = (
         supabase.table("checkins")
