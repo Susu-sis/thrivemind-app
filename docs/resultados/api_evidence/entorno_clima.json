@@ -1,0 +1,16 @@
+{
+  "status": 200,
+  "endpoint": "GET /entorno/clima",
+  "response": {
+    "ciudad": "No disponible",
+    "temperatura": 20,
+    "sensacion_termica": 20,
+    "humedad": 50,
+    "descripcion": "Datos climáticos no disponibles",
+    "condicion": "unknown",
+    "nubosidad": 50,
+    "viento_kmh": 10,
+    "presion": 1013,
+    "clasificacion_kb": "soleado"
+  }
+}

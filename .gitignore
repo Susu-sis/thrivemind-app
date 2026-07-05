@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Chroma vectorstore caches
+backend/app/data/chroma_*/
+
+# Node modules (frontend)
+node_modules/
+dist/
+frontend/.next/
+frontend/out/
+
+# Local node environment and bundled node binaries
+.nodeenv/
+node-v*/
+
+# Logs
+*.log
+
+# Test / coverage
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Build artifacts
+*.egg-info/
+build/

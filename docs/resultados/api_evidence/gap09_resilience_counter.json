@@ -1,0 +1,9 @@
+{
+  "status": 200,
+  "endpoint": "GET /insights/override/resilience-counter",
+  "response": {
+    "resilience_counter": 0,
+    "overrides_7d": 0,
+    "level": "normal"
+  }
+}

@@ -1,0 +1,2838 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ThriveMind API",
+    "description": "Ecosistema de bienestar holístico orquestado por IA",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Registrar nuevo usuario",
+        "operationId": "register_api_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegister"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Iniciar sesión",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Refrescar access token",
+        "operationId": "refresh_api_v1_auth_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Obtener perfil propio",
+        "operationId": "get_me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/checkin/": {
+      "post": {
+        "tags": [
+          "Check-in Diario"
+        ],
+        "summary": "Crear check-in diario",
+        "operationId": "crear_checkin_api_v1_checkin__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckinCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Crear Checkin Api V1 Checkin  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/checkin/dashboard/tendencias": {
+      "get": {
+        "tags": [
+          "Check-in Diario"
+        ],
+        "summary": "Obtener Tendencias Dashboard",
+        "operationId": "obtener_tendencias_dashboard_api_v1_checkin_dashboard_tendencias_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dias",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 90,
+              "minimum": 7,
+              "default": 14,
+              "title": "Dias"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Obtener Tendencias Dashboard Api V1 Checkin Dashboard Tendencias Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkin/correlaciones": {
+      "get": {
+        "tags": [
+          "Check-in Diario"
+        ],
+        "summary": "Correlaciones cross-pilar del usuario",
+        "operationId": "get_correlaciones_api_v1_checkin_correlaciones_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dias",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "title": "Dias"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkin/correlaciones/lag": {
+      "get": {
+        "tags": [
+          "Check-in Diario"
+        ],
+        "summary": "Correlaciones con efecto retrasado",
+        "operationId": "get_correlaciones_lag_api_v1_checkin_correlaciones_lag_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dias",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 30,
+              "title": "Dias"
+            }
+          },
+          {
+            "name": "max_lag",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3,
+              "title": "Max Lag"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkin/contextual": {
+      "post": {
+        "tags": [
+          "Check-in Diario"
+        ],
+        "summary": "Crear Checkin Contextual",
+        "operationId": "crear_checkin_contextual_api_v1_checkin_contextual_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "tipo_checkin",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tipo Checkin"
+            }
+          },
+          {
+            "name": "estado_emocional",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Estado Emocional"
+            }
+          },
+          {
+            "name": "energia_fisica",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "title": "Energia Fisica"
+            }
+          },
+          {
+            "name": "emocion_principal",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Emocion Principal"
+            }
+          },
+          {
+            "name": "nota",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Nota"
+            }
+          },
+          {
+            "name": "hambre",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "title": "Hambre"
+            }
+          },
+          {
+            "name": "saciedad",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "title": "Saciedad"
+            }
+          },
+          {
+            "name": "referencia_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Referencia Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Crear Checkin Contextual Api V1 Checkin Contextual Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/mente/generar": {
+      "post": {
+        "tags": [
+          "Pilar Mente"
+        ],
+        "summary": "Generar sesión de meditación personalizada",
+        "operationId": "generar_sesion_api_v1_mente_generar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeditacionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/mente/historial": {
+      "get": {
+        "tags": [
+          "Pilar Mente"
+        ],
+        "summary": "Historial de meditaciones",
+        "operationId": "get_historial_api_v1_mente_historial_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cuerpo/nutricion/analizar-imagen": {
+      "post": {
+        "tags": [
+          "Pilar Cuerpo"
+        ],
+        "summary": "Analizar imagen de plato con GPT-4o Vision",
+        "operationId": "analizar_plato_api_v1_cuerpo_nutricion_analizar_imagen_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_analizar_plato_api_v1_cuerpo_nutricion_analizar_imagen_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/cuerpo/nutricion/recomendacion": {
+      "post": {
+        "tags": [
+          "Pilar Cuerpo"
+        ],
+        "summary": "Recomendación nutricional personalizada",
+        "operationId": "recomendacion_nutricional_api_v1_cuerpo_nutricion_recomendacion_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "estado_emocional",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 5,
+              "title": "Estado Emocional"
+            }
+          },
+          {
+            "name": "emocion_principal",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "neutral",
+              "title": "Emocion Principal"
+            }
+          },
+          {
+            "name": "energia_fisica",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 5,
+              "title": "Energia Fisica"
+            }
+          },
+          {
+            "name": "horas_sueno",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 7.0,
+              "title": "Horas Sueno"
+            }
+          },
+          {
+            "name": "objetivo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "equilibrio",
+              "title": "Objetivo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cuerpo/nutricion/historial": {
+      "get": {
+        "tags": [
+          "Pilar Cuerpo"
+        ],
+        "summary": "Historial de análisis nutricionales",
+        "operationId": "historial_nutricion_api_v1_cuerpo_nutricion_historial_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/entorno/planta-recomendada": {
+      "get": {
+        "tags": [
+          "Pilar Entorno"
+        ],
+        "summary": "Recomendar planta según emoción",
+        "operationId": "recomendar_planta_api_v1_entorno_planta_recomendada_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "emocion_principal",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "neutral",
+              "title": "Emocion Principal"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/entorno/cultivos": {
+      "get": {
+        "tags": [
+          "Pilar Entorno"
+        ],
+        "summary": "Listar cultivos activos del usuario",
+        "operationId": "listar_cultivos_api_v1_entorno_cultivos_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "include_deleted",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Deleted"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Pilar Entorno"
+        ],
+        "summary": "Añadir nuevo cultivo",
+        "operationId": "agregar_cultivo_api_v1_entorno_cultivos_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "nombre_planta",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Nombre Planta"
+            }
+          },
+          {
+            "name": "tipo",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tipo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/entorno/cultivos/{cultivo_id}": {
+      "delete": {
+        "tags": [
+          "Pilar Entorno"
+        ],
+        "summary": "Soft-delete un cultivo",
+        "operationId": "eliminar_cultivo_api_v1_entorno_cultivos__cultivo_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cultivo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Cultivo Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/entorno/cultivos/{cultivo_id}/restore": {
+      "post": {
+        "tags": [
+          "Pilar Entorno"
+        ],
+        "summary": "Restaurar cultivo eliminado",
+        "operationId": "restaurar_cultivo_api_v1_entorno_cultivos__cultivo_id__restore_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cultivo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Cultivo Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/entorno/cosecha-lista": {
+      "get": {
+        "tags": [
+          "Pilar Entorno"
+        ],
+        "summary": "Verificar qué cultivos están listos para cosechar",
+        "operationId": "verificar_cosecha_api_v1_entorno_cosecha_lista_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/entorno/consejo": {
+      "post": {
+        "tags": [
+          "Pilar Entorno"
+        ],
+        "summary": "Consejo de farming personalizado con IA",
+        "operationId": "consejo_farming_api_v1_entorno_consejo_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "consulta",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Consulta"
+            }
+          },
+          {
+            "name": "estado_emocional",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 5,
+              "title": "Estado Emocional"
+            }
+          },
+          {
+            "name": "emocion_principal",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "neutral",
+              "title": "Emocion Principal"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/entorno/clima": {
+      "get": {
+        "tags": [
+          "Pilar Entorno"
+        ],
+        "summary": "Clima actual para el usuario",
+        "operationId": "clima_actual_api_v1_entorno_clima_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 52.3676,
+              "title": "Lat"
+            }
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 4.9041,
+              "title": "Lon"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ambient/status": {
+      "get": {
+        "tags": [
+          "Ambient IoT"
+        ],
+        "summary": "Estado de la conexión con Philips Hue Bridge",
+        "operationId": "get_hue_status_api_v1_ambient_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/ambient/apply/{profile_name}": {
+      "post": {
+        "tags": [
+          "Ambient IoT"
+        ],
+        "summary": "Aplicar perfil de iluminación específico",
+        "operationId": "apply_profile_api_v1_ambient_apply__profile_name__post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "profile_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Profile Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ambient/auto": {
+      "post": {
+        "tags": [
+          "Ambient IoT"
+        ],
+        "summary": "Selección automática de perfil basada en estado del usuario",
+        "operationId": "auto_ambient_api_v1_ambient_auto_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AmbientAutoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/ambient/profiles": {
+      "get": {
+        "tags": [
+          "Ambient IoT"
+        ],
+        "summary": "Lista todos los perfiles terapéuticos disponibles",
+        "operationId": "list_profiles_api_v1_ambient_profiles_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/preferences/": {
+      "get": {
+        "tags": [
+          "Preferencias"
+        ],
+        "summary": "Obtener configuración de pilares del usuario",
+        "operationId": "get_preferences_api_v1_preferences__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferencesResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Preferencias"
+        ],
+        "summary": "Actualizar configuración de pilares",
+        "operationId": "update_preferences_api_v1_preferences__patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPreferencesUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPreferencesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/insights/holistic": {
+      "get": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Recomendación holística de 3 pilares",
+        "description": "Cierra el loop: Check-in → Contexto → Acción en 3 pilares.",
+        "operationId": "holistic_recommendation_api_v1_insights_holistic_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/insights/recommendations": {
+      "get": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Recomendaciones personalizadas",
+        "operationId": "personalized_recommendations_api_v1_insights_recommendations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/insights/convergence": {
+      "get": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Dashboard de convergencia de 3 pilares",
+        "description": "Returns pillar health scores, cross-pillar correlations,\nand convergence insights.",
+        "operationId": "convergence_dashboard_api_v1_insights_convergence_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dias",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 90,
+              "minimum": 7,
+              "default": 14,
+              "title": "Dias"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/insights/matrix": {
+      "get": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Matriz de interdependencias entre pilares",
+        "operationId": "interdependency_matrix_api_v1_insights_matrix_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dias",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 90,
+              "minimum": 7,
+              "default": 30,
+              "title": "Dias"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/insights/context-history": {
+      "get": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Historial de contextos aplicados",
+        "description": "Returns logged context resolutions showing what was recommended\nand how the user's state changed afterward.",
+        "operationId": "context_history_api_v1_insights_context_history_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/insights/sentiment": {
+      "get": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Análisis de sentimiento de las notas",
+        "operationId": "sentiment_analysis_api_v1_insights_sentiment_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dias",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 30,
+              "minimum": 1,
+              "default": 7,
+              "title": "Dias"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/insights/interventions": {
+      "get": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Historial de intervenciones del sistema",
+        "description": "Historial de intervenciones generadas con feedback del usuario.",
+        "operationId": "intervention_history_api_v1_insights_interventions_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/insights/interventions/{intervention_id}/feedback": {
+      "post": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Valorar una intervención",
+        "description": "El usuario valora la intervención (1-5). Cierra el triplete MLOps.",
+        "operationId": "rate_intervention_api_v1_insights_interventions__intervention_id__feedback_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "intervention_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Intervention Id"
+            }
+          },
+          {
+            "name": "score",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 5,
+              "minimum": 1,
+              "description": "Valoración 1-5",
+              "title": "Score"
+            },
+            "description": "Valoración 1-5"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/insights/interventions/acceptance-rate": {
+      "get": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Tasa de aceptación de intervenciones",
+        "description": "Métricas de aceptación por tipo de intervención.\nTriplete MLOps para detección de concept drift.",
+        "operationId": "acceptance_rate_api_v1_insights_interventions_acceptance_rate_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/insights/override/detect": {
+      "post": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Detectar si el usuario contradice la IA",
+        "description": "Step 1: Detect if user action conflicts with AI recommendation.",
+        "operationId": "detect_user_override_api_v1_insights_override_detect_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_detect_user_override_api_v1_insights_override_detect_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/insights/override/register": {
+      "post": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Registrar override con mitigación",
+        "description": "Steps 2-4: Notify + Validate + Mitigate. Respeta siempre la decisión del usuario.",
+        "operationId": "register_user_override_api_v1_insights_override_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Override Data"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/insights/override/resilience-counter": {
+      "get": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Resilience Counter del usuario",
+        "description": "CR: +1/override, -0.5 si HRV recupera. ≥3 → reflexión, ≥5 → derivación.",
+        "operationId": "user_resilience_counter_api_v1_insights_override_resilience_counter_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/insights/classify": {
+      "get": {
+        "tags": [
+          "Insights & Recomendaciones"
+        ],
+        "summary": "Clasificar estado emocional (Capa 1 Motor IA)",
+        "description": "Capa 1 del Motor de IA: clasifica el estado emocional del usuario.\nAuto-selecciona cold-start (<30 check-ins) o XGBoost (≥30).\nRetorna: estado, confianza, probabilidades, features, method.",
+        "operationId": "classify_state_api_v1_insights_classify_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/search/global": {
+      "get": {
+        "tags": [
+          "Búsqueda Global"
+        ],
+        "summary": "Búsqueda global en todos los módulos",
+        "operationId": "search_global_api_v1_search_global_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "Q"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 30,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/gamification/": {
+      "get": {
+        "tags": [
+          "Gamificación"
+        ],
+        "summary": "Obtener puntos y hitos del usuario",
+        "operationId": "get_gamification_api_v1_gamification__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/gamification/award": {
+      "post": {
+        "tags": [
+          "Gamificación"
+        ],
+        "summary": "Otorgar puntos por acción",
+        "operationId": "post_award_api_v1_gamification_award_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Action"
+            }
+          },
+          {
+            "name": "referencia_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Referencia Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/hue/profiles": {
+      "get": {
+        "tags": [
+          "Iluminación HUE"
+        ],
+        "summary": "Listar perfiles predefinidos + custom",
+        "operationId": "list_profiles_api_v1_hue_profiles_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/hue/profiles/custom": {
+      "post": {
+        "tags": [
+          "Iluminación HUE"
+        ],
+        "summary": "Crear perfil personalizado",
+        "operationId": "create_profile_api_v1_hue_profiles_custom_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HueProfileCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/hue/profiles/{profile_id}": {
+      "delete": {
+        "tags": [
+          "Iluminación HUE"
+        ],
+        "summary": "Eliminar perfil custom",
+        "operationId": "delete_profile_api_v1_hue_profiles__profile_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "profile_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Profile Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/meal-planner/weekly": {
+      "get": {
+        "tags": [
+          "Planificador de Menú"
+        ],
+        "summary": "Generar plan nutricional semanal",
+        "operationId": "get_weekly_plan_api_v1_meal_planner_weekly_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "objetivo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "equilibrio",
+              "title": "Objetivo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AmbientAutoRequest": {
+        "properties": {
+          "mood_score": {
+            "type": "integer",
+            "title": "Mood Score"
+          },
+          "energy_score": {
+            "type": "integer",
+            "title": "Energy Score"
+          },
+          "objetivo": {
+            "type": "string",
+            "title": "Objetivo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mood_score",
+          "energy_score",
+          "objetivo"
+        ],
+        "title": "AmbientAutoRequest"
+      },
+      "Body_analizar_plato_api_v1_cuerpo_nutricion_analizar_imagen_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_analizar_plato_api_v1_cuerpo_nutricion_analizar_imagen_post"
+      },
+      "Body_detect_user_override_api_v1_insights_override_detect_post": {
+        "properties": {
+          "ai_recommendation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ai Recommendation"
+          },
+          "user_action": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "User Action"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ai_recommendation",
+          "user_action"
+        ],
+        "title": "Body_detect_user_override_api_v1_insights_override_detect_post"
+      },
+      "CheckinCreate": {
+        "properties": {
+          "estado_emocional": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Estado Emocional"
+          },
+          "energia_fisica": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Energia Fisica"
+          },
+          "horas_sueno": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 24.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Horas Sueno"
+          },
+          "conexion_entorno": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Conexion Entorno"
+          },
+          "emocion_principal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Emocion Principal"
+          },
+          "nota": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nota"
+          },
+          "tipo_checkin": {
+            "type": "string",
+            "enum": [
+              "diario",
+              "pre_meditacion",
+              "post_meditacion",
+              "pre_comida",
+              "post_comida",
+              "post_cosecha"
+            ],
+            "title": "Tipo Checkin",
+            "default": "diario"
+          },
+          "referencia_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Referencia Id"
+          },
+          "hambre": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hambre"
+          },
+          "saciedad": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Saciedad"
+          },
+          "hrv_estimado": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hrv Estimado"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado_emocional",
+          "energia_fisica",
+          "conexion_entorno"
+        ],
+        "title": "CheckinCreate",
+        "description": "Schema para crear un check-in diario."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HueProfileCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kelvin": {
+            "type": "integer",
+            "title": "Kelvin"
+          },
+          "brightness": {
+            "type": "integer",
+            "title": "Brightness"
+          },
+          "color_hex": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color Hex"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "kelvin",
+          "brightness"
+        ],
+        "title": "HueProfileCreate"
+      },
+      "MeditacionRequest": {
+        "properties": {
+          "intencion": {
+            "type": "string",
+            "title": "Intencion"
+          },
+          "objetivo": {
+            "type": "string",
+            "title": "Objetivo"
+          },
+          "duracion_min": {
+            "type": "integer",
+            "title": "Duracion Min",
+            "default": 10
+          },
+          "checkin_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkin Id"
+          },
+          "generar_audio": {
+            "type": "boolean",
+            "title": "Generar Audio",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "intencion",
+          "objetivo"
+        ],
+        "title": "MeditacionRequest"
+      },
+      "PillarConfig": {
+        "properties": {
+          "activo": {
+            "type": "boolean",
+            "title": "Activo",
+            "default": true
+          },
+          "intensidad": {
+            "type": "integer",
+            "maximum": 3.0,
+            "minimum": 1.0,
+            "title": "Intensidad",
+            "description": "1=básico, 2=intermedio, 3=avanzado",
+            "default": 1
+          }
+        },
+        "type": "object",
+        "title": "PillarConfig",
+        "description": "Configuración de un pilar individual."
+      },
+      "RefreshRequest": {
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "title": "RefreshRequest"
+      },
+      "Token": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "refresh_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refresh Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In",
+            "default": 900
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "user"
+        ],
+        "title": "Token"
+      },
+      "UserLogin": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "UserLogin"
+      },
+      "UserPreferencesResponse": {
+        "properties": {
+          "mente_activo": {
+            "type": "boolean",
+            "title": "Mente Activo"
+          },
+          "mente_intensidad": {
+            "type": "integer",
+            "title": "Mente Intensidad"
+          },
+          "cuerpo_activo": {
+            "type": "boolean",
+            "title": "Cuerpo Activo"
+          },
+          "cuerpo_intensidad": {
+            "type": "integer",
+            "title": "Cuerpo Intensidad"
+          },
+          "entorno_activo": {
+            "type": "boolean",
+            "title": "Entorno Activo"
+          },
+          "entorno_intensidad": {
+            "type": "integer",
+            "title": "Entorno Intensidad"
+          },
+          "objetivo_principal": {
+            "type": "string",
+            "title": "Objetivo Principal"
+          },
+          "frecuencia_checkin": {
+            "type": "string",
+            "title": "Frecuencia Checkin"
+          },
+          "alergias": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Alergias",
+            "default": []
+          },
+          "preferencia_dieta": {
+            "type": "string",
+            "title": "Preferencia Dieta",
+            "default": "sin_restriccion"
+          },
+          "presupuesto_semanal": {
+            "type": "string",
+            "title": "Presupuesto Semanal",
+            "default": "medio"
+          },
+          "objetivo_fitness": {
+            "type": "string",
+            "title": "Objetivo Fitness",
+            "default": "mantener"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mente_activo",
+          "mente_intensidad",
+          "cuerpo_activo",
+          "cuerpo_intensidad",
+          "entorno_activo",
+          "entorno_intensidad",
+          "objetivo_principal",
+          "frecuencia_checkin"
+        ],
+        "title": "UserPreferencesResponse",
+        "description": "Schema de respuesta con el estado completo de preferencias."
+      },
+      "UserPreferencesUpdate": {
+        "properties": {
+          "mente": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PillarConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cuerpo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PillarConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "entorno": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PillarConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "objetivo_principal": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "equilibrio",
+                  "reducir_estres",
+                  "mejorar_sueno",
+                  "aumentar_energia",
+                  "conexion_naturaleza",
+                  "rendimiento_cognitivo"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objetivo Principal"
+          },
+          "frecuencia_checkin": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "diario",
+                  "cada_dos_dias",
+                  "semanal"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frecuencia Checkin"
+          },
+          "alergias": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alergias",
+            "description": "Alergias alimentarias: gluten, lactosa, frutos_secos, mariscos, huevo, soja"
+          },
+          "preferencia_dieta": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "omnivora",
+                  "vegetariana",
+                  "vegana",
+                  "pescatariana",
+                  "sin_restriccion"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferencia Dieta"
+          },
+          "presupuesto_semanal": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "bajo",
+                  "medio",
+                  "alto"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Presupuesto Semanal",
+            "description": "bajo=<60€, medio=60-120€, alto=>120€"
+          },
+          "objetivo_fitness": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "mantener",
+                  "perder_peso",
+                  "ganar_musculo",
+                  "tonificar",
+                  "resistencia"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objetivo Fitness"
+          }
+        },
+        "type": "object",
+        "title": "UserPreferencesUpdate",
+        "description": "Schema para actualizar preferencias — todos los campos son opcionales."
+      },
+      "UserRegister": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          },
+          "nombre": {
+            "type": "string",
+            "title": "Nombre"
+          },
+          "apellido": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Apellido"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "nombre"
+        ],
+        "title": "UserRegister"
+      },
+      "UserResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "nombre": {
+            "type": "string",
+            "title": "Nombre"
+          },
+          "apellido": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Apellido"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "nombre",
+          "created_at"
+        ],
+        "title": "UserResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

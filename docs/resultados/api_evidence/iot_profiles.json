@@ -1,0 +1,36 @@
+{
+  "status": 200,
+  "endpoint": "GET /ambient/profiles",
+  "response": [
+    {
+      "name": "meditacion_calma",
+      "description": "Luz cálida y tenue para meditación profunda",
+      "justificacion": "2200K suprime cortisol y activa el nervio vago"
+    },
+    {
+      "name": "meditacion_enfoque",
+      "description": "Luz neutra media para concentración y enfoque",
+      "justificacion": "4000K mejora rendimiento cognitivo (Viola et al.)"
+    },
+    {
+      "name": "meditacion_energia",
+      "description": "Luz fría brillante para activación y energía",
+      "justificacion": "6500K suprime melatonina y activa cortisol matutino"
+    },
+    {
+      "name": "nutricion_comida",
+      "description": "Luz cálida-media para acompañar la comida consciente",
+      "justificacion": "3000K promueve la relajación digestiva parasimpática"
+    },
+    {
+      "name": "farming_cuidado",
+      "description": "Luz natural simulada para cuidado de plantas",
+      "justificacion": "Estimula ritmo circadiano natural del usuario"
+    },
+    {
+      "name": "descanso_nocturno",
+      "description": "Luz mínima ultra-cálida para preparar el sueño",
+      "justificacion": "2000K maximiza producción de melatonina (Czeisler)"
+    }
+  ]
+}

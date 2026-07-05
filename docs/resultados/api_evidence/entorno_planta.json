@@ -1,0 +1,5 @@
+{
+  "status": 500,
+  "endpoint": "GET /entorno/planta-recomendada",
+  "response": "Internal Server Error"
+}

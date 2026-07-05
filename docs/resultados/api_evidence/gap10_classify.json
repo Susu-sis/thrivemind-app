@@ -1,0 +1,5 @@
+{
+  "status": 500,
+  "endpoint": "GET /insights/classify",
+  "response": "Internal Server Error"
+}

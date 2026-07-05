@@ -1,0 +1,10 @@
+{
+  "status": 200,
+  "endpoint": "GET /ambient/status",
+  "response": {
+    "connected": false,
+    "mode": "simulation",
+    "bridge_ip": "",
+    "message": "Bridge no disponible. Perfiles se aplican en modo simulación."
+  }
+}

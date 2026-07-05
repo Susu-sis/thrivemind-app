@@ -1,0 +1,119 @@
+{
+  "status": 200,
+  "endpoint": "GET /insights/convergence",
+  "response": {
+    "pillar_scores": {
+      "mente": 6.5,
+      "cuerpo": 6.7,
+      "entorno": 6.6,
+      "sueno": 9.2
+    },
+    "convergence_series": [
+      {
+        "fecha": "2026-06-21",
+        "fecha_corta": "06-21",
+        "mente": 3.0,
+        "cuerpo": 4.0,
+        "entorno": 4.0
+      },
+      {
+        "fecha": "2026-06-22",
+        "fecha_corta": "06-22",
+        "mente": 4.0,
+        "cuerpo": 5.0,
+        "entorno": 4.0
+      },
+      {
+        "fecha": "2026-06-23",
+        "fecha_corta": "06-23",
+        "mente": 5.0,
+        "cuerpo": 5.0,
+        "entorno": 5.0
+      },
+      {
+        "fecha": "2026-06-24",
+        "fecha_corta": "06-24",
+        "mente": 6.0,
+        "cuerpo": 6.0,
+        "entorno": 6.0
+      },
+      {
+        "fecha": "2026-06-25",
+        "fecha_corta": "06-25",
+        "mente": 6.0,
+        "cuerpo": 6.0,
+        "entorno": 6.0
+      },
+      {
+        "fecha": "2026-06-26",
+        "fecha_corta": "06-26",
+        "mente": 7.0,
+        "cuerpo": 7.0,
+        "entorno": 7.0
+      },
+      {
+        "fecha": "2026-06-27",
+        "fecha_corta": "06-27",
+        "mente": 7.0,
+        "cuerpo": 7.0,
+        "entorno": 7.0
+      },
+      {
+        "fecha": "2026-06-28",
+        "fecha_corta": "06-28",
+        "mente": 8.0,
+        "cuerpo": 8.0,
+        "entorno": 8.0
+      },
+      {
+        "fecha": "2026-06-29",
+        "fecha_corta": "06-29",
+        "mente": 7.0,
+        "cuerpo": 7.0,
+        "entorno": 7.0
+      },
+      {
+        "fecha": "2026-06-30",
+        "fecha_corta": "06-30",
+        "mente": 8.0,
+        "cuerpo": 8.0,
+        "entorno": 8.0
+      },
+      {
+        "fecha": "2026-07-01",
+        "fecha_corta": "07-01",
+        "mente": 9.0,
+        "cuerpo": 8.0,
+        "entorno": 9.0
+      },
+      {
+        "fecha": "2026-07-02",
+        "fecha_corta": "07-02",
+        "mente": 8.0,
+        "cuerpo": 9.0,
+        "entorno": 8.0
+      }
+    ],
+    "interdependency_matrix": {
+      "mente_cuerpo": {
+        "r": 0.953,
+        "p": 0.0
+      },
+      "mente_entorno": {
+        "r": 0.99,
+        "p": 0.0
+      },
+      "cuerpo_entorno": {
+        "r": 0.949,
+        "p": 0.0
+      }
+    },
+    "insights": [
+      "Cuando tu estado emocional mejora, tu energía también sube (r=0.953)",
+      "Tu conexión con el entorno está ligada a tu bienestar mental (r=0.99)",
+      "Cuidar tu entorno impulsa tu energía física (r=0.949)"
+    ],
+    "n_checkins": 12,
+    "dias": 14
+  }
+}

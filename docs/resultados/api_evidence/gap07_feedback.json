@@ -1,0 +1,7 @@
+{
+  "status": 200,
+  "endpoint": "POST /insights/interventions/{id}/feedback?score=4",
+  "response": {
+    "error": "{'message': 'invalid input syntax for type uuid: \"test-1\"', 'code': '22P02', 'hint': None, 'details': None}"
+  }
+}

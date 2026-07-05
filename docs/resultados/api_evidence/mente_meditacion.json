@@ -1,0 +1,5 @@
+{
+  "status": 500,
+  "endpoint": "POST /mente/generar",
+  "response": "Internal Server Error"
+}

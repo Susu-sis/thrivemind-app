@@ -1,0 +1,24 @@
+{
+  "status": 200,
+  "endpoint": "GET /insights/recommendations",
+  "response": {
+    "recommendations": [
+      {
+        "type": "meditation",
+        "icon": "🙏",
+        "title": "Meditación de gratitud",
+        "reason": "Tu bienestar ha sido alto — refuérzalo con gratitud.",
+        "action_label": "Generar meditación",
+        "action_href": "/dashboard/mente"
+      },
+      {
+        "type": "trend",
+        "icon": "📉",
+        "title": "Tu ánimo ha bajado",
+        "reason": "-1.1 puntos. Considera una pausa de autocuidado.",
+        "action_label": "Ir a Check-in",
+        "action_href": "/dashboard/checkin"
+      }
+    ]
+  }
+}

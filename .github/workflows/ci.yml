@@ -1,0 +1,83 @@
+name: ThriveMind CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: thrivemind-app/backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run tests
+        env:
+          ENVIRONMENT: demo
+          SECRET_KEY: ci-testing-secret-key
+        run: pytest -v --tb=short
+
+      - name: Check imports
+        env:
+          ENVIRONMENT: demo
+          SECRET_KEY: ci-testing-secret-key
+        run: python -c "from app.main import app; print(f'OK: {len(app.routes)} routes')"
+
+  backend-lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: thrivemind-app/backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Check syntax (py_compile)
+        run: python -m compileall app/ -q
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: thrivemind-app/frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build check
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+        run: npm run build

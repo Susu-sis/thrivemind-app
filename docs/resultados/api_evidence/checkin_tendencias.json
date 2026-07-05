@@ -1,0 +1,218 @@
+{
+  "status": 200,
+  "endpoint": "GET /checkin/dashboard/tendencias",
+  "response": {
+    "serie_temporal": [
+      {
+        "fecha": "2026-06-21",
+        "fecha_corta": "06-21",
+        "estado_emocional": 3,
+        "energia_fisica": 4,
+        "horas_sueno": 5.5,
+        "conexion_entorno": 4,
+        "emocion_principal": "agobio"
+      },
+      {
+        "fecha": "2026-06-22",
+        "fecha_corta": "06-22",
+        "estado_emocional": 4,
+        "energia_fisica": 5,
+        "horas_sueno": 6.0,
+        "conexion_entorno": 4,
+        "emocion_principal": "cansancio"
+      },
+      {
+        "fecha": "2026-06-23",
+        "fecha_corta": "06-23",
+        "estado_emocional": 5,
+        "energia_fisica": 5,
+        "horas_sueno": 6.5,
+        "conexion_entorno": 5,
+        "emocion_principal": "neutral"
+      },
+      {
+        "fecha": "2026-06-24",
+        "fecha_corta": "06-24",
+        "estado_emocional": 6,
+        "energia_fisica": 6,
+        "horas_sueno": 7.0,
+        "conexion_entorno": 6,
+        "emocion_principal": "calma"
+      },
+      {
+        "fecha": "2026-06-25",
+        "fecha_corta": "06-25",
+        "estado_emocional": 6,
+        "energia_fisica": 6,
+        "horas_sueno": 7.5,
+        "conexion_entorno": 6,
+        "emocion_principal": "calma"
+      },
+      {
+        "fecha": "2026-06-26",
+        "fecha_corta": "06-26",
+        "estado_emocional": 7,
+        "energia_fisica": 7,
+        "horas_sueno": 7.5,
+        "conexion_entorno": 7,
+        "emocion_principal": "gratitud"
+      },
+      {
+        "fecha": "2026-06-27",
+        "fecha_corta": "06-27",
+        "estado_emocional": 7,
+        "energia_fisica": 7,
+        "horas_sueno": 8.0,
+        "conexion_entorno": 7,
+        "emocion_principal": "energía"
+      },
+      {
+        "fecha": "2026-06-28",
+        "fecha_corta": "06-28",
+        "estado_emocional": 8,
+        "energia_fisica": 8,
+        "horas_sueno": 8.0,
+        "conexion_entorno": 8,
+        "emocion_principal": "bienestar"
+      },
+      {
+        "fecha": "2026-06-29",
+        "fecha_corta": "06-29",
+        "estado_emocional": 7,
+        "energia_fisica": 7,
+        "horas_sueno": 7.5,
+        "conexion_entorno": 7,
+        "emocion_principal": "calma"
+      },
+      {
+        "fecha": "2026-06-30",
+        "fecha_corta": "06-30",
+        "estado_emocional": 8,
+        "energia_fisica": 8,
+        "horas_sueno": 8.5,
+        "conexion_entorno": 8,
+        "emocion_principal": "gratitud"
+      },
+      {
+        "fecha": "2026-07-01",
+        "fecha_corta": "07-01",
+        "estado_emocional": 9,
+        "energia_fisica": 8,
+        "horas_sueno": 8.0,
+        "conexion_entorno": 9,
+        "emocion_principal": "alegría"
+      },
+      {
+        "fecha": "2026-07-02",
+        "fecha_corta": "07-02",
+        "estado_emocional": 8,
+        "energia_fisica": 9,
+        "horas_sueno": 8.5,
+        "conexion_entorno": 8,
+        "emocion_principal": "bienestar"
+      }
+    ],
+    "promedios_pilares": [
+      {
+        "pilar": "Mente",
+        "valor": 6.5,
+        "fullMark": 10
+      },
+      {
+        "pilar": "Cuerpo",
+        "valor": 6.7,
+        "fullMark": 10
+      },
+      {
+        "pilar": "Entorno",
+        "valor": 6.6,
+        "fullMark": 10
+      },
+      {
+        "pilar": "Sueño",
+        "valor": 9.2,
+        "fullMark": 10
+      }
+    ],
+    "correlacion_sueno_emocional": [
+      {
+        "sueno": 5.5,
+        "estado_emocional": 3,
+        "fecha": "2026-06-21"
+      },
+      {
+        "sueno": 6.0,
+        "estado_emocional": 4,
+        "fecha": "2026-06-22"
+      },
+      {
+        "sueno": 6.5,
+        "estado_emocional": 5,
+        "fecha": "2026-06-23"
+      },
+      {
+        "sueno": 7.0,
+        "estado_emocional": 6,
+        "fecha": "2026-06-24"
+      },
+      {
+        "sueno": 7.5,
+        "estado_emocional": 6,
+        "fecha": "2026-06-25"
+      },
+      {
+        "sueno": 7.5,
+        "estado_emocional": 7,
+        "fecha": "2026-06-26"
+      },
+      {
+        "sueno": 8.0,
+        "estado_emocional": 7,
+        "fecha": "2026-06-27"
+      },
+      {
+        "sueno": 8.0,
+        "estado_emocional": 8,
+        "fecha": "2026-06-28"
+      },
+      {
+        "sueno": 7.5,
+        "estado_emocional": 7,
+        "fecha": "2026-06-29"
+      },
+      {
+        "sueno": 8.5,
+        "estado_emocional": 8,
+        "fecha": "2026-06-30"
+      },
+      {
+        "sueno": 8.0,
+        "estado_emocional": 9,
+        "fecha": "2026-07-01"
+      },
+      {
+        "sueno": 8.5,
+        "estado_emocional": 8,
+        "fecha": "2026-07-02"
+      }
+    ],
+    "estadisticas": {
+      "total_checkins": 12,
+      "promedio_emocional": 6.5,
+      "promedio_energia": 6.7,
+      "promedio_sueno": 7.4,
+      "mejor_dia": {
+        "fecha": "2026-07-01",
+        "valor": 9
+      },
+      "peor_dia": {
+        "fecha": "2026-06-21",
+        "valor": 3
+      },
+      "tendencia": 2.7,
+      "tendencia_texto": "↑ Mejorando 2.7 puntos",
+      "correlacion_sueno_emocional": 0.95,
+      "correlacion_texto": "Correlación fuerte: dormir más mejora tu bienestar emocional"
+    }
+  }
+}

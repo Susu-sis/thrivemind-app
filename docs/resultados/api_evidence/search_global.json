@@ -1,0 +1,5 @@
+{
+  "status": 200,
+  "endpoint": "GET /search/global?q=meditacion",
+  "response": {}
+}

@@ -1,0 +1,18 @@
+{
+  "status": 200,
+  "endpoint": "GET /preferences/",
+  "response": {
+    "mente_activo": true,
+    "mente_intensidad": 1,
+    "cuerpo_activo": true,
+    "cuerpo_intensidad": 1,
+    "entorno_activo": true,
+    "entorno_intensidad": 1,
+    "objetivo_principal": "equilibrio",
+    "frecuencia_checkin": "diario",
+    "alergias": [],
+    "preferencia_dieta": "sin_restriccion",
+    "presupuesto_semanal": "medio",
+    "objetivo_fitness": "mantener"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "status": 500,
+  "endpoint": "GET /insights/sentiment",
+  "response": "Internal Server Error"
+}

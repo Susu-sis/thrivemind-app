@@ -1,0 +1,20 @@
+{
+  "status": 200,
+  "endpoint": "POST /insights/override/detect",
+  "request_body": {
+    "ai_recommendation": {
+      "tipo": "meditacion_nocturna",
+      "intensidad": "suave"
+    },
+    "user_action": {
+      "tipo": "ejercicio_intenso",
+      "intensidad": "alta"
+    }
+  },
+  "response": {
+    "override_detected": false,
+    "conflicts": [],
+    "n_conflicts": 0,
+    "timestamp": "2026-07-05T09:27:47.675737+00:00"
+  }
+}

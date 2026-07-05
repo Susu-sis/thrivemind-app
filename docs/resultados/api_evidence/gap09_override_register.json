@@ -1,0 +1,48 @@
+{
+  "status": 200,
+  "endpoint": "POST /insights/override/register",
+  "response": {
+    "override_registered": true,
+    "resilience_counter": 1.0,
+    "notification": {
+      "type": "override_notification",
+      "tone": "informative",
+      "message": "He detectado que tu elección difiere de mi recomendación. Tu decisión es respetada — solo te comparto información adicional.",
+      "conflicts_explained": []
+    },
+    "validation": {
+      "action_allowed": true,
+      "message": "Tu bienestar, tu decisión. ThriveMind registra para aprender."
+    },
+    "mitigation": {
+      "applied": true,
+      "params": {
+        "luz": {
+          "descripcion": "Luz a 4000K en vez de 6500K (compromiso entre activación y protección)",
+          "kelvin": 4000,
+          "brillo_max": 70
+        },
+        "nutricion": {
+          "descripcion": "Tirosina + magnesio (sin cafeína extrema)",
+          "permitido": [
+            "tirosina moderada",
+            "magnesio",
+            "L-teanina"
+          ],
+          "bloqueado": [
+            "cafeína >300mg",
+            "azúcar refinada alta"
+          ]
+        },
+        "audio": {
+          "descripcion": "Beta suave 15-20Hz (no gamma agresivo)",
+          "frecuencia_hz_min": 15,
+          "frecuencia_hz_max": 20
+        },
+        "recovery_checkin_min": 90
+      },
+      "recovery_checkin_scheduled_min": 90
+    },
+    "cr_alert": null
+  }
+}

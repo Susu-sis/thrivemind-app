@@ -1,0 +1,71 @@
+{
+  "status": 200,
+  "endpoint": "GET /checkin/correlaciones",
+  "response": {
+    "correlaciones": [
+      {
+        "variable_x": "conexion_entorno",
+        "variable_y": "estado_emocional",
+        "r": 0.98,
+        "p_value": 0.0,
+        "fuerza": "fuerte",
+        "direccion": "positiva",
+        "emoji": "🟢",
+        "insight": "Tu conexión con el entorno tiene una correlación fuerte positiva (r=0.98) con tu estado emocional. Cuando tu conexión con el entorno sube, tu estado emocional también tiende a subir."
+      },
+      {
+        "variable_x": "horas_sueno",
+        "variable_y": "energia_fisica",
+        "r": 0.966,
+        "p_value": 0.0,
+        "fuerza": "fuerte",
+        "direccion": "positiva",
+        "emoji": "🟢",
+        "insight": "Tus horas de sueño tiene una correlación fuerte positiva (r=0.97) con tu energía física. Cuando tus horas de sueño sube, tu energía física también tiende a subir."
+      },
+      {
+        "variable_x": "conexion_entorno",
+        "variable_y": "energia_fisica",
+        "r": 0.964,
+        "p_value": 0.0,
+        "fuerza": "fuerte",
+        "direccion": "positiva",
+        "emoji": "🟢",
+        "insight": "Tu conexión con el entorno tiene una correlación fuerte positiva (r=0.96) con tu energía física. Cuando tu conexión con el entorno sube, tu energía física también tiende a subir."
+      },
+      {
+        "variable_x": "horas_sueno",
+        "variable_y": "conexion_entorno",
+        "r": 0.956,
+        "p_value": 0.0,
+        "fuerza": "fuerte",
+        "direccion": "positiva",
+        "emoji": "🟢",
+        "insight": "Tus horas de sueño tiene una correlación fuerte positiva (r=0.96) con tu conexión con el entorno. Cuando tus horas de sueño sube, tu conexión con el entorno también tiende a subir."
+      },
+      {
+        "variable_x": "estado_emocional",
+        "variable_y": "energia_fisica",
+        "r": 0.943,
+        "p_value": 0.0,
+        "fuerza": "fuerte",
+        "direccion": "positiva",
+        "emoji": "🟢",
+        "insight": "Tu estado emocional tiene una correlación fuerte positiva (r=0.94) con tu energía física. Cuando tu estado emocional sube, tu energía física también tiende a subir."
+      },
+      {
+        "variable_x": "horas_sueno",
+        "variable_y": "estado_emocional",
+        "r": 0.926,
+        "p_value": 0.0,
+        "fuerza": "fuerte",
+        "direccion": "positiva",
+        "emoji": "🟢",
+        "insight": "Tus horas de sueño tiene una correlación fuerte positiva (r=0.93) con tu estado emocional. Cuando tus horas de sueño sube, tu estado emocional también tiende a subir."
+      }
+    ],
+    "resumen": "Analizando tus 14 check-ins, encontré 6 correlación(es) significativa(s). La más fuerte: Tu conexión con el entorno tiene una correlación fuerte positiva (r=0.98) con tu estado emocional. Cuando tu conexión con el entorno sube, tu estado emocional también tiende a subir.",
+    "n_checkins": 14,
+    "suficientes_datos": true
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "status": 500,
+  "endpoint": "POST /cuerpo/nutricion/recomendacion",
+  "response": "Internal Server Error"
+}

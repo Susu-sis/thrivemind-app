@@ -1,0 +1,7 @@
+{
+  "status": 200,
+  "endpoint": "GET /insights/interventions/acceptance-rate",
+  "response": {
+    "total_interventions": 0
+  }
+}

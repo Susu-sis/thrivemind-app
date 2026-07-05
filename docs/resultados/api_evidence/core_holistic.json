@@ -1,0 +1,45 @@
+{
+  "status": 200,
+  "endpoint": "GET /insights/holistic",
+  "response": {
+    "context_key": "enfoque_trabajo",
+    "context_label": "Enfoque y productividad",
+    "hora": 11,
+    "urgency": null,
+    "weather_insight": null,
+    "estado": {
+      "emocional": 8,
+      "energia": 9,
+      "sueno": 8.5,
+      "emocion": "bienestar"
+    },
+    "pillar_mente": {
+      "meditacion": {
+        "titulo": "Concentración profunda",
+        "objetivo": "enfoque",
+        "duracion_min": 10
+      },
+      "hue": {
+        "perfil": "meditacion_enfoque",
+        "kelvin": 5000,
+        "brillo_pct": 80,
+        "descripcion": "Luz 5000K al 80%"
+      }
+    },
+    "pillar_cuerpo": {
+      "nutricion": {
+        "grupo_alimenticio": "ácidos grasos omega-3 + antioxidantes",
+        "ejemplo_comida": "Salmón con verduras de hoja verde",
+        "razon": "Apoya la función cognitiva y concentración"
+      }
+    },
+    "pillar_entorno": {
+      "planta_accion": "Observar el crecimiento de tu planta (pausa visual)",
+      "clima": {
+        "descripcion": "Datos climáticos no disponibles",
+        "temperatura": 20
+      }
+    },
+    "timestamp": "2026-07-05T11:27:47.920629"
+  }
+}

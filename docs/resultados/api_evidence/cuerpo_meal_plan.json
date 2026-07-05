@@ -1,0 +1,149 @@
+{
+  "status": 200,
+  "endpoint": "GET /meal-planner/weekly",
+  "response": {
+    "plan": {
+      "Lunes": {
+        "desayuno": {
+          "nombre": "Avena con frutas y miel",
+          "calorias": 350
+        },
+        "almuerzo": {
+          "nombre": "Ensalada mediterránea con pollo",
+          "calorias": 520
+        },
+        "cena": {
+          "nombre": "Salmón con verduras al vapor",
+          "calorias": 480
+        }
+      },
+      "Martes": {
+        "desayuno": {
+          "nombre": "Tostadas de aguacate y huevo",
+          "calorias": 400
+        },
+        "almuerzo": {
+          "nombre": "Bowl de quinoa con garbanzos",
+          "calorias": 490
+        },
+        "cena": {
+          "nombre": "Crema de calabaza con semillas",
+          "calorias": 350
+        }
+      },
+      "Miércoles": {
+        "desayuno": {
+          "nombre": "Yogur griego con granola",
+          "calorias": 320
+        },
+        "almuerzo": {
+          "nombre": "Wrap de pavo con espinacas",
+          "calorias": 450
+        },
+        "cena": {
+          "nombre": "Pasta integral con pesto y tomate",
+          "calorias": 520
+        }
+      },
+      "Jueves": {
+        "desayuno": {
+          "nombre": "Smoothie de espinaca y plátano",
+          "calorias": 280
+        },
+        "almuerzo": {
+          "nombre": "Arroz integral con tofu y brócoli",
+          "calorias": 480
+        },
+        "cena": {
+          "nombre": "Tortilla de verduras con ensalada",
+          "calorias": 400
+        }
+      },
+      "Viernes": {
+        "desayuno": {
+          "nombre": "Pancakes de avena y banana",
+          "calorias": 360
+        },
+        "almuerzo": {
+          "nombre": "Sopa de lentejas con pan",
+          "calorias": 440
+        },
+        "cena": {
+          "nombre": "Tacos de pescado con guacamole",
+          "calorias": 530
+        }
+      },
+      "Sábado": {
+        "desayuno": {
+          "nombre": "Huevos revueltos con champiñones",
+          "calorias": 380
+        },
+        "almuerzo": {
+          "nombre": "Paella de verduras",
+          "calorias": 550
+        },
+        "cena": {
+          "nombre": "Pizza casera integral",
+          "calorias": 600
+        }
+      },
+      "Domingo": {
+        "desayuno": {
+          "nombre": "Açaí bowl con frutas",
+          "calorias": 340
+        },
+        "almuerzo": {
+          "nombre": "Asado de pollo con patatas",
+          "calorias": 580
+        },
+        "cena": {
+          "nombre": "Sopa miso con edamame",
+          "calorias": 350
+        }
+      }
+    },
+    "shopping_list": {
+      "Frutas y verduras": [
+        "Plátano (7)",
+        "Espinaca (300g)",
+        "Tomate (1kg)",
+        "Aguacate (4)",
+        "Calabaza (1)",
+        "Champiñones (250g)",
+        "Brócoli (1)",
+        "Lechuga (1)"
+      ],
+      "Proteínas": [
+        "Pollo (500g)",
+        "Salmón (400g)",
+        "Huevos (12)",
+        "Tofu (400g)",
+        "Pavo (200g)",
+        "Pescado blanco (300g)"
+      ],
+      "Cereales y legumbres": [
+        "Avena (500g)",
+        "Quinoa (250g)",
+        "Arroz integral (500g)",
+        "Pasta integral (500g)",
+        "Lentejas (400g)",
+        "Pan integral (1)"
+      ],
+      "Lácteos": [
+        "Yogur griego (500g)",
+        "Queso mozzarella (200g)"
+      ],
+      "Otros": [
+        "Miel",
+        "Granola",
+        "Semillas de calabaza",
+        "Aceite de oliva",
+        "Pesto"
+      ]
+    },
+    "objetivo": "equilibrio",
+    "calorias_diarias_promedio": 1300,
+    "semana_inicio": "2026-07-05",
+    "semana_fin": "2026-07-11"
+  }
+}

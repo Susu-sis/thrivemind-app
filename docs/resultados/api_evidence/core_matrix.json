@@ -1,0 +1,111 @@
+{
+  "status": 200,
+  "endpoint": "GET /insights/matrix",
+  "response": {
+    "labels": [
+      "Mente",
+      "Cuerpo",
+      "Entorno",
+      "Sueño"
+    ],
+    "cells": [
+      {
+        "row": "Mente",
+        "col": "Mente",
+        "r": 1.0,
+        "p": 0.0
+      },
+      {
+        "row": "Mente",
+        "col": "Cuerpo",
+        "r": 0.943,
+        "p": 0.0
+      },
+      {
+        "row": "Mente",
+        "col": "Entorno",
+        "r": 0.98,
+        "p": 0.0
+      },
+      {
+        "row": "Mente",
+        "col": "Sueño",
+        "r": 0.926,
+        "p": 0.0
+      },
+      {
+        "row": "Cuerpo",
+        "col": "Mente",
+        "r": 0.943,
+        "p": 0.0
+      },
+      {
+        "row": "Cuerpo",
+        "col": "Cuerpo",
+        "r": 1.0,
+        "p": 0.0
+      },
+      {
+        "row": "Cuerpo",
+        "col": "Entorno",
+        "r": 0.964,
+        "p": 0.0
+      },
+      {
+        "row": "Cuerpo",
+        "col": "Sueño",
+        "r": 0.966,
+        "p": 0.0
+      },
+      {
+        "row": "Entorno",
+        "col": "Mente",
+        "r": 0.98,
+        "p": 0.0
+      },
+      {
+        "row": "Entorno",
+        "col": "Cuerpo",
+        "r": 0.964,
+        "p": 0.0
+      },
+      {
+        "row": "Entorno",
+        "col": "Entorno",
+        "r": 1.0,
+        "p": 0.0
+      },
+      {
+        "row": "Entorno",
+        "col": "Sueño",
+        "r": 0.956,
+        "p": 0.0
+      },
+      {
+        "row": "Sueño",
+        "col": "Mente",
+        "r": 0.926,
+        "p": 0.0
+      },
+      {
+        "row": "Sueño",
+        "col": "Cuerpo",
+        "r": 0.966,
+        "p": 0.0
+      },
+      {
+        "row": "Sueño",
+        "col": "Entorno",
+        "r": 0.956,
+        "p": 0.0
+      },
+      {
+        "row": "Sueño",
+        "col": "Sueño",
+        "r": 1.0,
+        "p": 0.0
+      }
+    ],
+    "n_checkins": 14
+  }
+}
