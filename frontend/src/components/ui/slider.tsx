@@ -2,7 +2,7 @@
 
 import { forwardRef, InputHTMLAttributes } from 'react';
 
-export interface SliderProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+export interface SliderProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> {
   value?: number[];
   onValueChange?: (value: number[]) => void;
   min?: number;
