@@ -49,6 +49,17 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api/v1")
 
 
+@app.get("/", include_in_schema=False)
+async def root():
+    return {
+        "app": settings.app_name,
+        "version": settings.app_version,
+        "status": "running",
+        "docs": "/docs",
+        "api": "/api/v1",
+    }
+
+
 @app.get("/docs", include_in_schema=False, response_class=HTMLResponse)
 async def custom_swagger_ui():
     return get_swagger_ui_html(
