@@ -9,6 +9,8 @@ except ImportError:
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.responses import HTMLResponse
 from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.api.v1.router import api_router
@@ -27,6 +29,7 @@ app = FastAPI(
     version=settings.app_version,
     description="Ecosistema de bienestar holístico orquestado por IA",
     lifespan=lifespan,
+    docs_url=None,  # override below with custom CDN
 )
 
 import os as _os
@@ -44,3 +47,13 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api/v1")
+
+
+@app.get("/docs", include_in_schema=False, response_class=HTMLResponse)
+async def custom_swagger_ui():
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title=f"{settings.app_name} - API Docs",
+        swagger_js_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
+        swagger_css_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
+    )
