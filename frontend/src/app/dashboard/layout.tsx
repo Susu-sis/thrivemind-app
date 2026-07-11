@@ -27,8 +27,23 @@ const ALL_NAV_ITEMS = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   const [pilares, setPilares] = useState({ mente: true, cuerpo: true, entorno: true });
+
+  useEffect(() => {
+    if (!loading && !user) {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('thrivemind_token') : null;
+      if (!token) {
+        window.location.href = '/login';
+      }
+    }
+  }, [user, loading]);
+
+  useEffect(() => {
+    const handleAuthExpired = () => { window.location.href = '/login'; };
+    window.addEventListener('auth:expired', handleAuthExpired);
+    return () => window.removeEventListener('auth:expired', handleAuthExpired);
+  }, []);
 
   useEffect(() => {
     api.get('/preferences/').then((res) => {
