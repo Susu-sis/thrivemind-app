@@ -27,12 +27,15 @@ export default function MealPlannerPage() {
   const [loading, setLoading] = useState(true);
   const [showShopping, setShowShopping] = useState(false);
 
-  useEffect(() => {
+  const cargarPlan = () => {
+    setLoading(true);
     api.get('/meal-planner/weekly')
       .then((res) => setData(res.data))
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { cargarPlan(); }, []);
 
   if (loading) {
     return <div className="flex items-center justify-center h-64 text-slate-400">Generando plan semanal...</div>;
@@ -49,12 +52,18 @@ export default function MealPlannerPage() {
             Promedio diario: <span className="text-emerald-400 font-semibold">{data.calorias_diarias_promedio} kcal</span>
           </p>
         </div>
-        <button
-          onClick={() => setShowShopping((v) => !v)}
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm transition-colors"
-        >
-          {showShopping ? 'Ver Plan' : '🛒 Lista de Compras'}
-        </button>
+        <div className="flex gap-2">
+          <button onClick={cargarPlan}
+            className="px-4 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded-lg text-sm transition-colors">
+            🔄 Regenerar
+          </button>
+          <button
+            onClick={() => setShowShopping((v) => !v)}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm transition-colors"
+          >
+            {showShopping ? 'Ver Plan' : '🛒 Lista de Compras'}
+          </button>
+        </div>
       </div>
 
       {showShopping ? (

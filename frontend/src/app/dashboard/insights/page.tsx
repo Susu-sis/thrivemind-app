@@ -37,7 +37,8 @@ export default function InsightsPage() {
   const [recs, setRecs] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const cargarInsights = () => {
+    setLoading(true);
     Promise.all([
       api.get('/insights/holistic').catch(() => null),
       api.get('/insights/recommendations').catch(() => null),
@@ -45,7 +46,9 @@ export default function InsightsPage() {
       if (hRes?.data) setHolistic(hRes.data);
       if (rRes?.data?.recommendations) setRecs(rRes.data.recommendations);
     }).finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { cargarInsights(); }, []);
 
   if (loading) {
     return <div className="flex items-center justify-center h-64 text-slate-400">Cargando recomendaciones...</div>;
@@ -59,9 +62,15 @@ export default function InsightsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold">💡 Recomendaciones Holísticas</h1>
-        <p className="text-slate-400 mt-1">Acciones personalizadas basadas en tu estado actual</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">💡 Recomendaciones Holísticas</h1>
+          <p className="text-slate-400 mt-1">Acciones personalizadas basadas en tu estado actual</p>
+        </div>
+        <button onClick={cargarInsights}
+          className="px-4 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded-lg text-sm transition-colors">
+          🔄 Actualizar
+        </button>
       </div>
 
       {/* Holistic 3-pillar card */}

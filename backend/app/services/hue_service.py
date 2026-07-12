@@ -78,7 +78,8 @@ class HueAmbientService:
         if self.bridge_ip:
             try:
                 from phue import Bridge
-                self.bridge = Bridge(self.bridge_ip)
+                username = settings.hueappkey if settings.hueappkey else None
+                self.bridge = Bridge(self.bridge_ip, username=username)
                 self.bridge.connect()
                 self.modo = "live"
                 logger.info(f"Hue Bridge conectado en {self.bridge_ip}")
