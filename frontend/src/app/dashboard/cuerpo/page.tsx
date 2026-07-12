@@ -65,10 +65,8 @@ export default function CuerpoPage() {
             {recLoading ? 'Generando...' : '🥦 Obtener Recomendación'}
           </Button>
           {recomendacion && (
-            <div className="mt-4 space-y-2">
-              <p className="font-medium text-emerald-400">{recomendacion.grupo_alimenticio as string}</p>
-              <p className="text-sm">{recomendacion.ejemplo_comida as string}</p>
-              <p className="text-sm text-slate-400">{recomendacion.razon as string}</p>
+            <div className="mt-4 p-3 rounded-lg bg-emerald-900/20 border border-emerald-700/30 text-sm text-slate-200 whitespace-pre-wrap">
+              {recomendacion.recomendacion as string}
             </div>
           )}
         </CardContent>

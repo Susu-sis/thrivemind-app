@@ -80,12 +80,14 @@ async def recomendacion_nutricional(
         }
 
     resultado = await generar_recomendacion_nutricional(
-        estado_emocional=estado_emocional,
-        emocion_principal=emocion_principal,
-        energia_fisica=energia_fisica,
-        horas_sueno=horas_sueno,
-        objetivo=objetivo,
         user_id=current_user["id"],
+        checkin_data={
+            "estado_emocional": estado_emocional,
+            "emocion_principal": emocion_principal,
+            "energia_fisica": energia_fisica,
+            "horas_sueno": horas_sueno,
+            "objetivo": objetivo,
+        },
     )
     return resultado
 

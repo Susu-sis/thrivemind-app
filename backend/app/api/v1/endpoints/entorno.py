@@ -39,24 +39,18 @@ async def listar_cultivos(
     return result.data
 
 
-@router.delete("/cultivos/{cultivo_id}", summary="Soft-delete un cultivo")
+@router.delete("/cultivos/{cultivo_id}", summary="Eliminar un cultivo")
 async def eliminar_cultivo(
     cultivo_id: str,
     current_user=Depends(get_current_user),
     supabase=Depends(get_supabase),
 ):
-    from datetime import datetime, timezone
-    result = (
-        supabase.table("cultivos_activos")
-        .update({
-            "deleted_at": datetime.now(timezone.utc).isoformat(),
-            "deleted_by": current_user["id"],
-        })
-        .eq("id", cultivo_id)
-        .eq("user_id", current_user["id"])
+    supabase.table("cultivos_activos") \
+        .update({"activo": False}) \
+        .eq("id", cultivo_id) \
+        .eq("user_id", current_user["id"]) \
         .execute()
-    )
-    return {"message": "Cultivo marcado como eliminado", "can_restore": True, "crop": result.data[0] if result.data else None}
+    return {"message": "Cultivo eliminado", "id": cultivo_id}
 
 
 @router.post("/cultivos/{cultivo_id}/restore", summary="Restaurar cultivo eliminado")
@@ -67,7 +61,7 @@ async def restaurar_cultivo(
 ):
     result = (
         supabase.table("cultivos_activos")
-        .update({"deleted_at": None, "deleted_by": None})
+        .update({"activo": True})
         .eq("id", cultivo_id)
         .eq("user_id", current_user["id"])
         .execute()
@@ -89,12 +83,13 @@ async def consejo_farming(
     estado_emocional: int = 5,
     emocion_principal: str = "neutral",
     current_user=Depends(get_current_user),
+    supabase=Depends(get_supabase),
 ):
+    cultivos = supabase.table("cultivos_activos").select("nombre_planta").eq("user_id", current_user["id"]).eq("activo", True).execute().data or []
     return await generar_consejo_farming(
-        consulta=consulta,
-        estado_emocional=estado_emocional,
-        emocion_principal=emocion_principal,
         user_id=current_user["id"],
+        consulta=consulta,
+        cultivos_activos=cultivos,
     )
 
 

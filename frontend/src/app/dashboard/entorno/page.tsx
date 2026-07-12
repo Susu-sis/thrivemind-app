@@ -38,7 +38,7 @@ export default function EntornoPage() {
     setConsejoLoading(true);
     try {
       const res = await api.post(`/entorno/consejo?consulta=${encodeURIComponent(consulta)}`);
-      setConsejo(res.data.consejo || JSON.stringify(res.data));
+      setConsejo(res.data.respuesta || JSON.stringify(res.data));
       toast.success('Consejo generado');
     } catch {
       toast.error('Error al obtener consejo');
