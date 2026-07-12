@@ -22,9 +22,6 @@ export default function EntornoPage() {
   const [consejo, setConsejo] = useState<string | null>(null);
   const [consejoLoading, setConsejoLoading] = useState(false);
   const [consulta, setConsulta] = useState('');
-  const [consejo, setConsejo] = useState<string | null>(null);
-  const [consejoLoading, setConsejoLoading] = useState(false);
-  const [consulta, setConsulta] = useState('');
 
   useEffect(() => {
     Promise.all([
