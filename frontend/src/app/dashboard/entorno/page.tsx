@@ -19,6 +19,9 @@ interface Cultivo {
 }
 
 export default function EntornoPage() {
+  const [cultivos, setCultivos] = useState<Cultivo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [clima, setClima] = useState<Record<string, unknown> | null>(null);
   const [consejo, setConsejo] = useState<string | null>(null);
   const [consejoLoading, setConsejoLoading] = useState(false);
   const [consulta, setConsulta] = useState('');
