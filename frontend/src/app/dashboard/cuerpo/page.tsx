@@ -10,7 +10,22 @@ import api from '@/lib/api';
 export default function CuerpoPage() {
   const [loading, setLoading] = useState(false);
   const [analisis, setAnalisis] = useState<Record<string, unknown> | null>(null);
+  const [recLoading, setRecLoading] = useState(false);
+  const [recomendacion, setRecomendacion] = useState<Record<string, unknown> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const pedirRecomendacion = async () => {
+    setRecLoading(true);
+    try {
+      const res = await api.post('/cuerpo/nutricion/recomendacion?estado_emocional=5&emocion_principal=neutral&energia_fisica=5&horas_sueno=7&objetivo=equilibrio');
+      setRecomendacion(res.data);
+      toast.success('Recomendación generada');
+    } catch {
+      toast.error('Error al generar recomendación');
+    } finally {
+      setRecLoading(false);
+    }
+  };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -37,6 +52,27 @@ export default function CuerpoPage() {
     <div className="max-w-3xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">💚 Pilar Cuerpo</h1>
       <p className="text-slate-400">Analiza un plato con IA o recibe recomendaciones nutricionales personalizadas.</p>
+
+      {/* Recomendación nutricional sin imagen */}
+      <Card className="border-slate-700 bg-slate-800/50">
+        <CardHeader>
+          <CardTitle>Recomendación Nutricional IA</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-slate-400">Recibe un consejo nutricional personalizado basado en tu estado actual, sin necesidad de imagen.</p>
+          <Button className="w-full" onClick={pedirRecomendacion} disabled={recLoading}>
+            {recLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+            {recLoading ? 'Generando...' : '🥦 Obtener Recomendación'}
+          </Button>
+          {recomendacion && (
+            <div className="mt-4 space-y-2">
+              <p className="font-medium text-emerald-400">{recomendacion.grupo_alimenticio as string}</p>
+              <p className="text-sm">{recomendacion.ejemplo_comida as string}</p>
+              <p className="text-sm text-slate-400">{recomendacion.razon as string}</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Análisis de imagen */}
       <Card className="border-slate-700 bg-slate-800/50">

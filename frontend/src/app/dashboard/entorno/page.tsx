@@ -19,9 +19,12 @@ interface Cultivo {
 }
 
 export default function EntornoPage() {
-  const [cultivos, setCultivos] = useState<Cultivo[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [clima, setClima] = useState<Record<string, unknown> | null>(null);
+  const [consejo, setConsejo] = useState<string | null>(null);
+  const [consejoLoading, setConsejoLoading] = useState(false);
+  const [consulta, setConsulta] = useState('');
+  const [consejo, setConsejo] = useState<string | null>(null);
+  const [consejoLoading, setConsejoLoading] = useState(false);
+  const [consulta, setConsulta] = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -30,6 +33,20 @@ export default function EntornoPage() {
     ]).finally(() => setLoading(false));
   }, []);
 
+  const pedirConsejo = async () => {
+    if (!consulta.trim()) { toast.error('Escribe una consulta primero'); return; }
+    setConsejoLoading(true);
+    try {
+      const res = await api.post(`/entorno/consejo?consulta=${encodeURIComponent(consulta)}`);
+      setConsejo(res.data.consejo || JSON.stringify(res.data));
+      toast.success('Consejo generado');
+    } catch {
+      toast.error('Error al obtener consejo');
+    } finally {
+      setConsejoLoading(false);
+    }
+  };
+
   const agregarCultivo = async (planta: string, tipo: string) => {
     try {
       const res = await api.post(`/entorno/cultivos?nombre_planta=${encodeURIComponent(planta)}&tipo=${encodeURIComponent(tipo)}`);
@@ -37,6 +54,16 @@ export default function EntornoPage() {
       toast.success(`${planta} añadida a tus cultivos`);
     } catch {
       toast.error('Error al añadir el cultivo');
+    }
+  };
+
+  const eliminarCultivo = async (id: string, nombre: string) => {
+    try {
+      await api.delete(`/entorno/cultivos/${id}`);
+      setCultivos(cultivos.filter((c) => c.id !== id));
+      toast.success(`${nombre} eliminado`);
+    } catch {
+      toast.error('Error al eliminar el cultivo');
     }
   };
 
@@ -80,9 +107,40 @@ export default function EntornoPage() {
                     {c.fecha_cosecha_est && ` — Cosecha est.: ${c.fecha_cosecha_est}`}
                   </p>
                 </div>
-                <Badge variant="outline">{c.estado}</Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline">{c.estado}</Badge>
+                  <button onClick={() => eliminarCultivo(c.id, c.nombre_planta)}
+                    className="text-red-400 hover:text-red-300 text-xs px-2 py-1 rounded hover:bg-red-900/30 transition-colors">
+                    ✕
+                  </button>
+                </div>
               </div>
             ))
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Consejo IA */}
+      <Card className="border-slate-700 bg-slate-800/50">
+        <CardHeader>
+          <CardTitle>🌿 Consejo de Cultivo con IA</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-slate-400">Pregunta sobre tus plantas, clima o temporada y obtén consejo personalizado.</p>
+          <input
+            value={consulta}
+            onChange={(e) => setConsulta(e.target.value)}
+            placeholder="Ej: ¿Qué debo plantar en verano? ¿Cómo cuido mi menta?"
+            className="w-full px-3 py-2 rounded-lg bg-slate-700 border border-slate-600 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          />
+          <Button className="w-full" onClick={pedirConsejo} disabled={consejoLoading}>
+            {consejoLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+            {consejoLoading ? 'Consultando IA...' : '🤖 Obtener Consejo'}
+          </Button>
+          {consejo && (
+            <div className="mt-3 p-3 rounded-lg bg-emerald-900/20 border border-emerald-700/30 text-sm text-slate-200 whitespace-pre-wrap">
+              {consejo}
+            </div>
           )}
         </CardContent>
       </Card>
