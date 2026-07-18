@@ -86,6 +86,26 @@ async def evidencia_cientifica(
         }
         for p in resultado.get("papers", [])
     ]
+
+    # Fallback: read directly from local JSON corpus if pgvector returned nothing
+    if not papers:
+        import json, pathlib, random
+        corpus_path = pathlib.Path(__file__).parent.parent.parent.parent / "app" / "data" / "thrivemind_rag_corpus_v4.json"
+        if corpus_path.exists():
+            data = json.loads(corpus_path.read_text(encoding="utf-8"))
+            all_papers = data if isinstance(data, list) else data.get("papers", [])
+            sample = random.sample(all_papers, min(6, len(all_papers)))
+            papers = [
+                {
+                    "titulo": p.get("title", p.get("titulo", "")),
+                    "autores": p.get("authors", p.get("autores", "")),
+                    "año": p.get("year", p.get("año", "")),
+                    "pilar": p.get("pillar", p.get("pilar", "")),
+                    "doi": p.get("doi", ""),
+                }
+                for p in sample
+            ]
+
     return {"papers": papers, "total": len(papers)}
 
 
