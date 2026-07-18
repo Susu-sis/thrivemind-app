@@ -28,6 +28,7 @@ from app.services.override_service import (
     detect_override, register_override, get_resilience_counter,
 )
 from app.services.emotional_classifier import classify_emotional_state
+from app.services.rag_service import recuperar_evidencia_cientifica
 
 router = APIRouter()
 
@@ -68,6 +69,25 @@ async def holistic_recommendation(
 
 
 # ── 2. Personalized Recommendations ──────────────────────────────────────────
+
+@router.get("/evidencia", summary="Evidencia científica RAG para las recomendaciones")
+async def evidencia_cientifica(
+    tema: str = Query(default="bienestar mindfulness nutricion", max_length=100),
+    current_user=Depends(get_current_user),
+):
+    resultado = await recuperar_evidencia_cientifica(consulta=tema, pilar="general", max_papers=6)
+    papers = [
+        {
+            "titulo": p.get("title", ""),
+            "autores": p.get("authors", ""),
+            "año": p.get("year", ""),
+            "pilar": p.get("pilar", p.get("pillar", "")),
+            "doi": p.get("doi", ""),
+        }
+        for p in resultado.get("papers", [])
+    ]
+    return {"papers": papers, "total": len(papers)}
+
 
 @router.get("/recommendations", summary="Recomendaciones personalizadas")
 async def personalized_recommendations(

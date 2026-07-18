@@ -36,15 +36,18 @@ export default function InsightsPage() {
   const [holistic, setHolistic] = useState<HolisticData | null>(null);
   const [recs, setRecs] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [evidencia, setEvidencia] = useState<{titulo: string; autores: string; año: number; pilar: string}[]>([]);
 
   const cargarInsights = () => {
     setLoading(true);
     Promise.all([
       api.get('/insights/holistic').catch(() => null),
       api.get('/insights/recommendations').catch(() => null),
-    ]).then(([hRes, rRes]) => {
+      api.get('/insights/evidencia?tema=bienestar+mindfulness+nutricion').catch(() => null),
+    ]).then(([hRes, rRes, eRes]) => {
       if (hRes?.data) setHolistic(hRes.data);
       if (rRes?.data?.recommendations) setRecs(rRes.data.recommendations);
+      if (eRes?.data?.papers) setEvidencia(eRes.data.papers);
     }).finally(() => setLoading(false));
   };
 
@@ -170,6 +173,24 @@ export default function InsightsPage() {
             <p className="text-lg">Realiza tu primer check-in para recibir recomendaciones personalizadas.</p>
           </CardContent>
         </Card>
+      )}
+
+      {/* RAG Scientific Evidence */}
+      {evidencia.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-xl font-semibold">📚 Evidencia Científica (RAG)</h2>
+          <p className="text-sm text-slate-400">Papers que fundamentan estas recomendaciones</p>
+          <div className="space-y-2">
+            {evidencia.map((p, i) => (
+              <div key={i} className="p-3 rounded-lg bg-slate-800/50 border border-slate-700 text-sm">
+                <span className="font-medium text-violet-300">{p.autores}</span>
+                <span className="text-slate-400"> ({p.año}). </span>
+                <span className="text-white italic">{p.titulo}</span>
+                <Badge className="ml-2 bg-slate-700 text-slate-300 text-xs">{p.pilar}</Badge>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

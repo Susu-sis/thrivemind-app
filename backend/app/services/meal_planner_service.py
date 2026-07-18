@@ -76,8 +76,42 @@ async def generate_weekly_plan(
             "semana_fin": (datetime.now(timezone.utc) + timedelta(days=6)).strftime("%Y-%m-%d"),
         }
 
-    # Production: could call OpenAI to generate plan based on preferences
-    # For now, return the demo plan as a starting point
+    # Production: call OpenAI to generate a personalised plan
+    try:
+        from langchain_openai import ChatOpenAI
+        from langchain_core.messages import SystemMessage, HumanMessage
+        import json
+
+        llm = ChatOpenAI(model=settings.openai_model, temperature=0.8, api_key=settings.openai_api_key)
+        system = """Eres un nutricionista experto en alimentación funcional y bienestar holístico.
+Genera un plan de comidas semanal variado y equilibrado en JSON con exactamente esta estructura:
+{
+  "Lunes": {"desayuno": {"nombre": "...", "calorias": 000}, "almuerzo": {...}, "cena": {...}},
+  "Martes": {...}, "Miércoles": {...}, "Jueves": {...}, "Viernes": {...}, "Sábado": {...}, "Domingo": {...}
+}
+Solo devuelve el JSON, sin texto adicional."""
+        response = await llm.ainvoke([
+            SystemMessage(content=system),
+            HumanMessage(content=f"Genera un plan semanal para objetivo: {objetivo}. Sé creativo y variado."),
+        ])
+        plan = json.loads(response.content)
+        cal_avg = round(sum(
+            sum(m.get("calorias", 400) for m in day.values())
+            for day in plan.values()
+        ) / 7)
+        return {
+            "plan": plan,
+            "shopping_list": _DEMO_SHOPPING,
+            "objetivo": objetivo,
+            "calorias_diarias_promedio": cal_avg,
+            "semana_inicio": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "semana_fin": (datetime.now(timezone.utc) + timedelta(days=6)).strftime("%Y-%m-%d"),
+            "generado_por": "gpt-4o",
+        }
+    except Exception:
+        pass
+
+    # Fallback to demo plan
     return {
         "plan": _DEMO_MEALS,
         "shopping_list": _DEMO_SHOPPING,
