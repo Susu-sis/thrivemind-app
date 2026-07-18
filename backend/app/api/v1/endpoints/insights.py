@@ -90,7 +90,7 @@ async def evidencia_cientifica(
     # Fallback: read directly from local JSON corpus if pgvector returned nothing
     if not papers:
         import json, pathlib, random
-        corpus_path = pathlib.Path(__file__).parent.parent.parent.parent / "app" / "data" / "thrivemind_rag_corpus_v4.json"
+        corpus_path = pathlib.Path(__file__).parent.parent.parent.parent / "data" / "thrivemind_rag_corpus_v4.json"
         if corpus_path.exists():
             data = json.loads(corpus_path.read_text(encoding="utf-8"))
             all_papers = data if isinstance(data, list) else data.get("papers", [])
