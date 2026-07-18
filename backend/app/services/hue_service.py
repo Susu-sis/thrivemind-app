@@ -119,15 +119,14 @@ class HueAmbientService:
             try:
                 lights = self.bridge.get_light_objects("name")
                 command = {"bri": perfil["bri"], "ct": perfil["ct"], "on": True}
-                for light in lights.values():
-                    light.brightness = perfil["bri"]
-                    light.colortemp_k = None  # use mired
-                self.bridge.set_light([l.name for l in lights.values()], command)
+                for light_name in lights.keys():
+                    self.bridge.set_light(light_name, command)
                 return {
                     "success": True,
                     "modo": "live",
                     "perfil_aplicado": resolved,
                     "descripcion": perfil["descripcion"],
+                    "justificacion": perfil["justificacion"],
                 }
             except Exception as e:
                 logger.error(f"Error al aplicar perfil Hue: {e}")
