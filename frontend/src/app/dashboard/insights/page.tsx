@@ -175,21 +175,17 @@ export default function InsightsPage() {
         </Card>
       )}
 
-      {/* RAG Scientific Evidence */}
+      {/* RAG Scientific Evidence — compact footnote */}
       {evidencia.length > 0 && (
-        <div className="space-y-3">
-          <h2 className="text-xl font-semibold">📚 Evidencia Científica (RAG)</h2>
-          <p className="text-sm text-slate-400">Papers que fundamentan estas recomendaciones</p>
-          <div className="space-y-2">
+        <div className="border-t border-slate-700 pt-4 mt-4">
+          <p className="text-xs text-slate-500 font-medium mb-2">📚 Evidencia científica que fundamenta estas recomendaciones (RAG corpus)</p>
+          <ul className="space-y-1">
             {evidencia.map((p, i) => (
-              <div key={i} className="p-3 rounded-lg bg-slate-800/50 border border-slate-700 text-sm">
-                <span className="font-medium text-violet-300">{p.autores}</span>
-                <span className="text-slate-400"> ({p.año}). </span>
-                <span className="text-white italic">{p.titulo}</span>
-                <Badge className="ml-2 bg-slate-700 text-slate-300 text-xs">{p.pilar}</Badge>
-              </div>
+              <li key={i} className="text-xs text-slate-500">
+                [{i + 1}] {p.autores} ({p.año}). <span className="italic">{p.titulo}</span>.{p.doi && <span className="text-slate-600"> DOI: {p.doi}</span>}
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       )}
     </div>

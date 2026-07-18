@@ -75,7 +75,7 @@ async def evidencia_cientifica(
     tema: str = Query(default="bienestar mindfulness nutricion", max_length=100),
     current_user=Depends(get_current_user),
 ):
-    resultado = await recuperar_evidencia_cientifica(consulta=tema, pilar="general", max_papers=6)
+    resultado = await recuperar_evidencia_cientifica(consulta=tema, pilar="general", max_papers=4)
     papers = [
         {
             "titulo": p.get("title", ""),
@@ -94,7 +94,7 @@ async def evidencia_cientifica(
         if corpus_path.exists():
             data = json.loads(corpus_path.read_text(encoding="utf-8"))
             all_papers = data if isinstance(data, list) else data.get("papers", [])
-            sample = random.sample(all_papers, min(6, len(all_papers)))
+            sample = random.sample(all_papers, min(4, len(all_papers)))
             papers = [
                 {
                     "titulo": p.get("title", p.get("titulo", "")),
