@@ -50,6 +50,19 @@ PERFILES_TERAPEUTICOS = {
         "descripcion": "Luz mínima ultra-cálida para preparar el sueño",
         "justificacion": "2000K maximiza producción de melatonina (Czeisler)",
     },
+    "naturaleza_verde": {
+        "bri": 150,
+        "hue": 25500,
+        "sat": 200,
+        "descripcion": "Verde natural para conexión con el entorno y calma",
+        "justificacion": "La cromoterapia verde reduce tensión arterial y ansiedad",
+    },
+    "apagado": {
+        "bri": 0,
+        "on": False,
+        "descripcion": "Apagar todas las luces",
+        "justificacion": "",
+    },
 }
 
 # Mapeo del Motor de Contexto a perfiles reales
@@ -118,7 +131,12 @@ class HueAmbientService:
         if self.modo == "live" and self.bridge:
             try:
                 lights = self.bridge.get_light_objects("name")
-                command = {"bri": perfil["bri"], "ct": perfil["ct"], "on": True}
+                command = {"on": perfil.get("on", True), "bri": perfil["bri"]}
+                if "ct" in perfil:
+                    command["ct"] = perfil["ct"]
+                if "hue" in perfil:
+                    command["hue"] = perfil["hue"]
+                    command["sat"] = perfil["sat"]
                 for light_name in lights.keys():
                     self.bridge.set_light(light_name, command)
                 return {
