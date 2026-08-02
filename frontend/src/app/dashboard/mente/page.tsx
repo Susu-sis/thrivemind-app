@@ -1,12 +1,166 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '@/lib/api';
+
+// ── Breathing module types ───────────────────────────────────────────────────
+
+type TechniqueKey = 'coherencia' | 'box';
+
+interface BreathPhase {
+  label: string;
+  duration: number; // seconds
+  scale: number;    // circle scale 0.7–1.5
+  color: string;    // tailwind ring color class
+}
+
+const TECHNIQUES: Record<TechniqueKey, { title: string; subtitle: string; phases: BreathPhase[] }> = {
+  coherencia: {
+    title: '💚 Coherencia Cardíaca',
+    subtitle: '5 s inhala · 5 s exhala · ciclo de 10 s',
+    phases: [
+      { label: 'Inhala...', duration: 5, scale: 1.45, color: 'ring-green-400' },
+      { label: 'Exhala...', duration: 5, scale: 0.75, color: 'ring-blue-400' },
+    ],
+  },
+  box: {
+    title: '⬜ Box Breathing',
+    subtitle: '4 s inhala · 4 s mantén · 4 s exhala · 4 s mantén',
+    phases: [
+      { label: 'Inhala...', duration: 4, scale: 1.45, color: 'ring-green-400' },
+      { label: 'Mantén',    duration: 4, scale: 1.45, color: 'ring-yellow-400' },
+      { label: 'Exhala...', duration: 4, scale: 0.75, color: 'ring-blue-400' },
+      { label: 'Mantén',    duration: 4, scale: 0.75, color: 'ring-slate-400' },
+    ],
+  },
+};
+
+function BreathingExercise() {
+  const [technique, setTechnique] = useState<TechniqueKey>('coherencia');
+  const [running, setRunning] = useState(false);
+  const [phaseIdx, setPhaseIdx] = useState(0);
+  const [countdown, setCountdown] = useState(0);
+  const [rounds, setRounds] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const phases = TECHNIQUES[technique].phases;
+  const currentPhase = running ? phases[phaseIdx] : phases[0];
+
+  const stop = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    setRunning(false);
+    setPhaseIdx(0);
+    setCountdown(phases[0].duration);
+    setRounds(0);
+  };
+
+  const start = () => {
+    setPhaseIdx(0);
+    setCountdown(phases[0].duration);
+    setRounds(0);
+    setRunning(true);
+  };
+
+  // Reset countdown when technique changes
+  useEffect(() => {
+    stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [technique]);
+
+  // Drive the timer
+  useEffect(() => {
+    if (!running) return;
+    intervalRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          // advance phase
+          setPhaseIdx((pi) => {
+            const next = (pi + 1) % phases.length;
+            if (next === 0) setRounds((r) => r + 1);
+            return next;
+          });
+          // next phase duration will be set in the next tick via phaseIdx
+          return -1; // sentinel
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [running, phases]);
+
+  // Sync countdown when phase changes
+  useEffect(() => {
+    if (running) setCountdown(phases[phaseIdx].duration);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phaseIdx]);
+
+  const scale = running ? currentPhase.scale : 1;
+  const ringColor = running ? currentPhase.color : 'ring-slate-600';
+  const phaseLabel = running ? currentPhase.label : 'Listo para empezar';
+
+  return (
+    <Card className="border-slate-700 bg-slate-800/50">
+      <CardHeader>
+        <CardTitle className="text-lg">Ejercicio de Respiración</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        {/* Technique selector */}
+        <div className="flex gap-2">
+          {(Object.keys(TECHNIQUES) as TechniqueKey[]).map((key) => (
+            <button
+              key={key}
+              onClick={() => setTechnique(key)}
+              className={`px-3 py-1.5 rounded text-sm transition-colors ${
+                technique === key
+                  ? 'bg-violet-600 text-white'
+                  : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+              }`}
+            >
+              {TECHNIQUES[key].title}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-slate-400">{TECHNIQUES[technique].subtitle}</p>
+
+        {/* Animated circle */}
+        <div className="flex flex-col items-center gap-4 py-4">
+          <div
+            className={`w-28 h-28 rounded-full ring-4 ${ringColor} bg-slate-700/60 flex items-center justify-center transition-all`}
+            style={{ transform: `scale(${scale})`, transition: 'transform 0.9s ease-in-out' }}
+          >
+            <span className="text-2xl font-light text-slate-200 select-none">
+              {running ? countdown : ''}
+            </span>
+          </div>
+          <p className="text-slate-300 text-lg font-medium tracking-wide">{phaseLabel}</p>
+          {running && rounds > 0 && (
+            <p className="text-xs text-slate-500">{rounds} {rounds === 1 ? 'ciclo completado' : 'ciclos completados'}</p>
+          )}
+        </div>
+
+        {/* Controls */}
+        <div className="flex justify-center gap-3">
+          {!running ? (
+            <Button onClick={start} className="bg-violet-600 hover:bg-violet-500 px-6">
+              ▶ Comenzar
+            </Button>
+          ) : (
+            <Button onClick={stop} variant="outline" className="border-slate-600 px-6">
+              ■ Detener
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Main page ────────────────────────────────────────────────────────────────
 
 export default function MentePage() {
   const [intencion, setIntencion] = useState('');
@@ -91,6 +245,8 @@ export default function MentePage() {
           </CardContent>
         </Card>
       )}
+
+      <BreathingExercise />
     </div>
   );
 }
