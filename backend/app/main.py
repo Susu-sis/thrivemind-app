@@ -39,6 +39,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:3000",
+        "https://thrivemind-app-f1f1.vercel.app",
         *_extra_origins,
     ],
     allow_credentials=True,
