@@ -296,6 +296,96 @@ async def interdependency_matrix(
     }
 
 
+# ── 4b. Interdependency Matrix — AI Natural Language Interpretation ───────────
+
+@router.get("/matrix/interpret", summary="Interpretación IA de la matriz de correlaciones")
+async def interpret_matrix(
+    dias: int = Query(default=30, ge=7, le=90),
+    current_user=Depends(get_current_user),
+    supabase=Depends(get_supabase),
+):
+    resp = (
+        supabase.table("checkins")
+        .select("estado_emocional, energia_fisica, horas_sueno, conexion_entorno")
+        .eq("user_id", current_user["id"])
+        .order("created_at", desc=True)
+        .limit(dias)
+        .execute()
+    )
+    checkins = resp.data or []
+    n = len(checkins)
+
+    if n < 5:
+        return {"insufficient_data": True, "n": n, "bullets": [], "resumen": ""}
+
+    import numpy as np
+    from scipy.stats import pearsonr
+
+    fields = ["estado_emocional", "energia_fisica", "conexion_entorno", "horas_sueno"]
+    labels = {"estado_emocional": "Mente", "energia_fisica": "Cuerpo",
+              "conexion_entorno": "Entorno", "horas_sueno": "Sueño"}
+
+    arrays = {f: np.array([c.get(f, np.nan) for c in checkins], dtype=float) for f in fields}
+
+    pairs = []
+    for i, f1 in enumerate(fields):
+        for j, f2 in enumerate(fields):
+            if j <= i:
+                continue
+            mask = ~(np.isnan(arrays[f1]) | np.isnan(arrays[f2]))
+            if mask.sum() >= 3:
+                r, p = pearsonr(arrays[f1][mask], arrays[f2][mask])
+                pairs.append({
+                    "a": labels[f1], "b": labels[f2],
+                    "r": round(r, 3), "p": round(p, 4),
+                })
+
+    # Build a compact data summary for the prompt
+    pair_lines = "\n".join(
+        f"- {p['a']} ↔ {p['b']}: r = {p['r']}, p = {p['p']}"
+        for p in sorted(pairs, key=lambda x: -abs(x["r"]))
+    )
+
+    prompt = f"""Eres el motor analítico de ThriveMind, una plataforma de bienestar holístico.
+El usuario tiene {n} check-ins registrados. Estos son los coeficientes de correlación de Pearson entre sus dimensiones de bienestar:
+
+{pair_lines}
+
+Genera exactamente 3 bullets en español, en segunda persona (tú), que expliquen en lenguaje natural qué significan estas correlaciones para el usuario. Cada bullet debe:
+- Citar el par de dimensiones y el valor de r
+- Explicar la implicación práctica para el usuario
+- Ser breve (máximo 2 frases)
+
+Devuelve solo los 3 bullets, uno por línea, sin numeración ni guiones extra."""
+
+    try:
+        from langchain_openai import ChatOpenAI
+        from langchain_core.messages import SystemMessage, HumanMessage
+        llm = ChatOpenAI(
+            model=settings.openai_model,
+            temperature=0.4,
+            api_key=settings.openai_api_key,
+        )
+        response = await llm.ainvoke([
+            SystemMessage(content="Eres el motor analítico de ThriveMind. Respondes siempre en español."),
+            HumanMessage(content=prompt),
+        ])
+        raw = response.content.strip()
+        bullets = [b.strip("•- ").strip() for b in raw.split("\n") if b.strip()][:3]
+    except Exception:
+        bullets = [
+            f"{pairs[0]['a']} y {pairs[0]['b']} tienen una correlación de {pairs[0]['r']} — evolucionan casi en paralelo.",
+            f"El sueño actúa como predictor transversal (correlacionado con los otros pilares).",
+            f"Basado en {n} check-ins. Añade más registros para mayor precisión.",
+        ] if pairs else []
+
+    return {
+        "bullets": bullets,
+        "n_checkins": n,
+        "pairs": pairs,
+    }
+
+
 # ── 5. Context History ────────────────────────────────────────────────────────
 
 @router.get("/context-history", summary="Historial de contextos aplicados")

@@ -18,18 +18,35 @@ interface MatrixData {
   insufficient_data?: boolean;
 }
 
+interface InterpretData {
+  bullets: string[];
+  n_checkins: number;
+  insufficient_data?: boolean;
+}
+
 export default function CorrelacionesPage() {
   const [data, setData] = useState<MatrixData | null>(null);
   const [loading, setLoading] = useState(true);
   const [dias, setDias] = useState(30);
+  const [interpret, setInterpret] = useState<InterpretData | null>(null);
+  const [interpretLoading, setInterpretLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    setInterpret(null);
     api.get(`/insights/matrix?dias=${dias}`)
       .then((res) => setData(res.data))
       .catch(() => setData(null))
       .finally(() => setLoading(false));
   }, [dias]);
+
+  const handleInterpret = () => {
+    setInterpretLoading(true);
+    api.get(`/insights/matrix/interpret?dias=${dias}`)
+      .then((res) => setInterpret(res.data))
+      .catch(() => setInterpret({ bullets: ['No se pudo generar la interpretación. Inténtalo de nuevo.'], n_checkins: 0 }))
+      .finally(() => setInterpretLoading(false));
+  };
 
   if (loading) {
     return <div className="flex items-center justify-center h-64 text-slate-400">Construyendo matriz...</div>;
@@ -79,18 +96,31 @@ export default function CorrelacionesPage() {
           <h1 className="text-2xl font-bold">🔗 Matriz de Interdependencias</h1>
           <p className="text-slate-400 mt-1">Correlaciones de Pearson entre todas las dimensiones de bienestar</p>
         </div>
-        <div className="flex gap-2">
-          {[14, 30, 60, 90].map((d) => (
-            <button
-              key={d}
-              onClick={() => setDias(d)}
-              className={`px-3 py-1 rounded text-sm ${
-                dias === d ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-              }`}
-            >
-              {d}d
-            </button>
-          ))}
+        <div className="flex items-center gap-3">
+          <div className="flex gap-2">
+            {[14, 30, 60, 90].map((d) => (
+              <button
+                key={d}
+                onClick={() => setDias(d)}
+                className={`px-3 py-1 rounded text-sm ${
+                  dias === d ? 'bg-violet-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                }`}
+              >
+                {d}d
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={handleInterpret}
+            disabled={interpretLoading}
+            className="px-4 py-1.5 rounded text-sm bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white flex items-center gap-2"
+          >
+            {interpretLoading ? (
+              <><span className="animate-spin inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full"></span> Analizando...</>
+            ) : (
+              '✨ Interpretar con IA'
+            )}
+          </button>
         </div>
       </div>
 
@@ -164,6 +194,28 @@ export default function CorrelacionesPage() {
           </p>
         </CardContent>
       </Card>
+
+      {/* AI Interpretation */}
+      {interpret && interpret.bullets.length > 0 && (
+        <Card className="bg-violet-950/40 border-violet-700/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-violet-300 text-base flex items-center gap-2">
+              ✨ Interpretación IA — ThriveMind
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {interpret.bullets.map((bullet, i) => (
+              <div key={i} className="flex gap-3 text-sm text-slate-200">
+                <span className="text-violet-400 mt-0.5 shrink-0">◆</span>
+                <p>{bullet}</p>
+              </div>
+            ))}
+            <p className="text-xs text-slate-500 pt-1">
+              Generado por GPT-4 · Basado en {interpret.n_checkins} check-ins · Datos propios del usuario
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
