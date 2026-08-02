@@ -4,8 +4,9 @@ Tests del módulo de check-ins de ThriveMind.
 Ejecutar: cd backend && pytest tests/test_checkin.py -v
 """
 import pytest
+from datetime import datetime, timezone, timedelta
 from unittest.mock import MagicMock, patch
-from app.services.checkin_service import guardar_checkin
+from app.services.checkin_service import guardar_checkin, calcular_racha
 
 
 class TestCheckinCreation:
@@ -22,7 +23,7 @@ class TestCheckinCreation:
             "nota": "Semana difícil en el trabajo",
         }
 
-        with patch("app.services.checkin_service.supabase", supabase_mock):
+        with patch("app.services.checkin_service.get_supabase_client", return_value=supabase_mock):
             resultado = guardar_checkin(datos_checkin)
 
         supabase_mock.table.assert_called_with("checkins")
@@ -49,7 +50,7 @@ class TestCheckinCreation:
             "tipo_checkin": "diario",
         }
 
-        with patch("app.services.checkin_service.supabase", supabase_mock):
+        with patch("app.services.checkin_service.get_supabase_client", return_value=supabase_mock):
             resultado = guardar_checkin(datos_sin_nota)
 
         assert resultado is not None
@@ -65,7 +66,36 @@ class TestCheckinCreation:
             "tipo_checkin": "diario",
         }
 
-        with patch("app.services.checkin_service.supabase", supabase_mock):
+        with patch("app.services.checkin_service.get_supabase_client", return_value=supabase_mock):
             resultado = guardar_checkin(datos_maximo)
 
         assert resultado is not None
+
+
+class TestCalcularRacha:
+
+    def _checkin(self, dias_atras: int) -> dict:
+        """Helper: genera un check-in con fecha relativa a hoy."""
+        fecha = datetime.now(timezone.utc) - timedelta(days=dias_atras)
+        return {"created_at": fecha.isoformat()}
+
+    def test_racha_lista_vacia(self):
+        assert calcular_racha([]) == 0
+
+    def test_racha_un_dia_hoy(self):
+        checkins = [self._checkin(0)]
+        assert calcular_racha(checkins) == 1
+
+    def test_racha_tres_dias_consecutivos(self):
+        checkins = [self._checkin(0), self._checkin(1), self._checkin(2)]
+        assert calcular_racha(checkins) == 3
+
+    def test_racha_interrumpida(self):
+        # Hoy + hace 2 días (sin ayer) → racha = 1
+        checkins = [self._checkin(0), self._checkin(2)]
+        assert calcular_racha(checkins) == 1
+
+    def test_racha_solo_pasado(self):
+        # Ningún check-in hoy → racha = 0
+        checkins = [self._checkin(1), self._checkin(2)]
+        assert calcular_racha(checkins) == 0

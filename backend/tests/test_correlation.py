@@ -9,6 +9,7 @@ from unittest.mock import patch, MagicMock
 
 from app.services.correlation_service import (
     calcular_correlaciones_usuario,
+    calcular_correlaciones_con_lag,
     interpretar_correlacion,
     generar_insight_texto,
 )
@@ -45,7 +46,7 @@ class TestCorrelationEngine:
                 {"estado_emocional": 4, "energia_fisica": 5, "horas_sueno": 6.0, "conexion_entorno": 4},
             ]
 
-        with patch("app.services.correlation_service.supabase", supabase_mock):
+        with patch("app.services.correlation_service.get_supabase_client", return_value=supabase_mock):
             resultado = calcular_correlaciones_usuario("test-user-123", dias=30)
 
         assert resultado["suficientes_datos"] is False
@@ -67,7 +68,7 @@ class TestCorrelationEngine:
             .eq.return_value.order.return_value.limit.return_value \
             .execute.return_value.data = checkins_demo
 
-        with patch("app.services.correlation_service.supabase", supabase_mock):
+        with patch("app.services.correlation_service.get_supabase_client", return_value=supabase_mock):
             resultado = calcular_correlaciones_usuario("test-user-123", dias=30)
 
         assert resultado["suficientes_datos"] is True
@@ -77,3 +78,51 @@ class TestCorrelationEngine:
         correlacion_top = resultado["correlaciones"][0]
         for campo in ["variable_x", "variable_y", "r", "p_value", "fuerza", "insight"]:
             assert campo in correlacion_top
+
+
+class TestLagCorrelationEngine:
+
+    def test_lag_datos_insuficientes(self, supabase_mock):
+        supabase_mock.table.return_value.select.return_value \
+            .eq.return_value.order.return_value.limit.return_value \
+            .execute.return_value.data = [
+                {"estado_emocional": 5, "energia_fisica": 6, "horas_sueno": 7.0,
+                 "conexion_entorno": 5, "created_at": "2026-01-01T10:00:00Z"},
+                {"estado_emocional": 6, "energia_fisica": 7, "horas_sueno": 7.5,
+                 "conexion_entorno": 6, "created_at": "2026-01-02T10:00:00Z"},
+            ]
+
+        with patch("app.services.correlation_service.get_supabase_client", return_value=supabase_mock):
+            resultado = calcular_correlaciones_con_lag("test-user-123", dias=30)
+
+        assert "error" in resultado
+        assert resultado["n_checkins"] == 2
+
+    def test_lag_datos_suficientes_estructura(self, supabase_mock):
+        checkins_demo = []
+        for i in range(14):
+            from datetime import datetime, timezone, timedelta
+            fecha = (datetime(2026, 4, 20, tzinfo=timezone.utc) + timedelta(days=i)).isoformat()
+            horas = 5.0 + (i % 4) * 0.75
+            energia = min(10, 4 + int((horas - 5.0) * 1.5))
+            checkins_demo.append({
+                "estado_emocional": 5 + (i % 3),
+                "energia_fisica": energia,
+                "horas_sueno": horas,
+                "conexion_entorno": 5 + (i % 4),
+                "created_at": fecha,
+            })
+
+        supabase_mock.table.return_value.select.return_value \
+            .eq.return_value.order.return_value.limit.return_value \
+            .execute.return_value.data = checkins_demo
+
+        with patch("app.services.correlation_service.get_supabase_client", return_value=supabase_mock):
+            resultado = calcular_correlaciones_con_lag("test-user-123", dias=30, max_lag=2)
+
+        assert "correlations" in resultado
+        assert "best_lags" in resultado
+        assert resultado["n_checkins"] == 14
+        assert "lag_0" in resultado["correlations"]
+        assert "lag_1" in resultado["correlations"]
+        assert "lag_2" in resultado["correlations"]
