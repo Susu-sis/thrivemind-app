@@ -60,9 +60,23 @@ export default function DashboardPage() {
     );
   }
 
+  const totalCheckins = data.estadisticas.total_checkins ?? 0;
+  const modoActivo = totalCheckins >= 30 ? 'L2' : 'L1';
+  const modoBadge = modoActivo === 'L2'
+    ? { label: `Modo L2 · XGBoost activo`, hint: 'Conecta wearable para Modo L3', color: 'text-green-400', dot: '🟢' }
+    : { label: `Modo L1 · Cold-start`, hint: `XGBoost activo en ${30 - totalCheckins} check-in${30 - totalCheckins !== 1 ? 's' : ''} más`, color: 'text-blue-400', dot: '🔵' };
+
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard de Bienestar</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold">Dashboard de Bienestar</h1>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs">
+          <span>{modoBadge.dot}</span>
+          <span className={`font-semibold ${modoBadge.color}`}>{modoBadge.label}</span>
+          <span className="text-slate-500">·</span>
+          <span className="text-slate-400">{modoBadge.hint}</span>
+        </div>
+      </div>
 
       {/* Demo Feature Showcase */}
       <Card className="border-indigo-500/30 bg-gradient-to-r from-indigo-900/20 to-purple-900/20">
