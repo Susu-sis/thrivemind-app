@@ -15,9 +15,35 @@ const EMOCIONES = [
   'neutral', 'cansancio', 'estrés', 'ansiedad', 'tristeza', 'agobio',
 ];
 
+const STATE_STYLES: Record<string, { border: string; bg: string; text: string; emoji: string }> = {
+  estres_agudo:       { border: 'border-red-500/50',    bg: 'bg-red-500/10',    text: 'text-red-400',    emoji: '🔴' },
+  fatiga_cronica:     { border: 'border-purple-500/50', bg: 'bg-purple-500/10', text: 'text-purple-400', emoji: '🟣' },
+  recuperacion_activa:{ border: 'border-green-500/50',  bg: 'bg-green-500/10',  text: 'text-green-400',  emoji: '🟢' },
+  equilibrio:         { border: 'border-blue-500/50',   bg: 'bg-blue-500/10',   text: 'text-blue-400',   emoji: '🔵' },
+  activacion:         { border: 'border-orange-500/50', bg: 'bg-orange-500/10', text: 'text-orange-400', emoji: '🟠' },
+};
+
+const INTERVENTION_HINTS: Record<string, string> = {
+  estres_agudo:        'Respiración 4-7-8 · Perfil HUE Relajación Profunda 2200K',
+  fatiga_cronica:      'Descanso prioritario · Nutrición T3-E (magnesio) · Luz ámbar 1900K',
+  recuperacion_activa: 'Coherencia Cardíaca 0.1 Hz · Nutrición T3-B (triptófano)',
+  equilibrio:          'Estado ideal para meditación y trabajo cognitivo profundo',
+  activacion:          'Perfil HUE Trabajo Productivo 5000K · Aprovecha el estado de flow',
+};
+
+interface ClassifyResult {
+  state: string;
+  confidence: number;
+  method: string;
+  description: { label: string; descripcion: string };
+  n_checkins_available: number;
+  reason: string;
+}
+
 export default function CheckinPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<ClassifyResult | null>(null);
   const [form, setForm] = useState({
     estado_emocional: 5,
     energia_fisica: 5,
@@ -32,10 +58,12 @@ export default function CheckinPage() {
     setLoading(true);
     try {
       await api.post('/checkin/', form);
+      const classify = await api.get('/insights/classify');
+      setResult(classify.data);
       toast.success('Check-in guardado correctamente');
-      router.push('/dashboard');
     } catch {
       toast.error('Error al guardar el check-in');
+      router.push('/dashboard');
     } finally {
       setLoading(false);
     }
@@ -45,6 +73,70 @@ export default function CheckinPage() {
     <div className="max-w-2xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">Check-in de Bienestar</h1>
 
+      {/* ── Classification result card ── */}
+      {result && (() => {
+        const style = STATE_STYLES[result.state] ?? STATE_STYLES['equilibrio'];
+        const pct = Math.round(result.confidence * 100);
+        const hint = INTERVENTION_HINTS[result.state] ?? '';
+        const modeLabel = result.method === 'xgboost' ? 'L2 · XGBoost' : 'L1 · Cold-start';
+        return (
+          <div className="space-y-6">
+            <Card className={`border-2 ${style.border} ${style.bg}`}>
+              <CardContent className="p-6 space-y-5">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{style.emoji}</span>
+                  <span className="text-xs font-medium text-slate-400 uppercase tracking-widest">Estado clasificado por Motor IA</span>
+                </div>
+
+                <div>
+                  <p className={`text-3xl font-bold ${style.text}`}>
+                    {result.description?.label ?? result.state}
+                  </p>
+                  <p className="text-sm text-slate-300 mt-1">{result.description?.descripcion}</p>
+                </div>
+
+                {/* Confidence bar */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs text-slate-400">
+                    <span>Confianza del modelo</span>
+                    <span className="font-semibold text-white">{pct}%</span>
+                  </div>
+                  <div className="w-full bg-slate-700 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full transition-all ${style.text.replace('text-', 'bg-')}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Badges */}
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="bg-slate-700 text-slate-200 text-xs">{modeLabel}</Badge>
+                  <Badge className="bg-slate-700 text-slate-200 text-xs">{result.n_checkins_available} check-ins</Badge>
+                </div>
+
+                {/* Intervention hint */}
+                {hint && (
+                  <div className="flex items-start gap-2 pt-1 border-t border-slate-700">
+                    <span className="text-base mt-0.5">💡</span>
+                    <div>
+                      <p className="text-xs text-slate-400 font-medium">Protocolo activo</p>
+                      <p className="text-sm text-slate-200">{hint}</p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Button className="w-full" size="lg" onClick={() => router.push('/dashboard')}>
+              Ver mi dashboard →
+            </Button>
+          </div>
+        );
+      })()}
+
+      {/* ── Check-in form (hidden after classification) ── */}
+      {!result && (<>
       {/* Estado emocional */}
       <Card className="border-slate-700 bg-slate-800/50">
         <CardHeader>
@@ -143,8 +235,9 @@ export default function CheckinPage() {
       </Card>
 
       <Button className="w-full" size="lg" onClick={handleSubmit} disabled={loading}>
-        {loading ? 'Guardando...' : '✓ Guardar Check-in'}
+        {loading ? 'Analizando tu estado...' : '✓ Guardar Check-in'}
       </Button>
+      </>)}
     </div>
   );
 }
