@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, Upload } from 'lucide-react';
@@ -10,12 +10,12 @@ import api from '@/lib/api';
 // Maps current hour to Tabla 3.6 (T7) circadian nutrition window
 function getCircadianWindow() {
   const h = new Date().getHours() + new Date().getMinutes() / 60;
-  if (h >= 6.5  && h < 8.5)  return { codigo: 'F2', label: 'Activación matutina',    precursor: 'L-Tirosina (T3-B)',   objetivo: '↑ Dopamina · foco',        emoji: '🌅' };
-  if (h >= 8.5  && h < 11)   return { codigo: 'F3', label: 'Pico cognitivo',          precursor: 'Colina + Omega-3',    objetivo: '↑ Acetilcolina · memoria', emoji: '🧠' };
-  if (h >= 11   && h < 15)   return { codigo: 'F4', label: 'Mediodía',                precursor: 'Triptófano + CH',     objetivo: '↑ Serotonina tarde',       emoji: '☀️'   };
-  if (h >= 15   && h < 17.5) return { codigo: 'F5', label: 'Reactivación vespertina', precursor: 'L-Tirosina + Mg',     objetivo: '2.º pico dopaminérgico',  emoji: '⚡'    };
-  if (h >= 19.5 && h < 21.5) return { codigo: 'F7', label: 'Transición crepuscular',  precursor: 'Triptófano nocturno', objetivo: 'Precarga melatonina',       emoji: '🌆' };
-  return                             { codigo: 'F8', label: 'Preparación sueño',       precursor: 'Probióticos + GABA',  objetivo: '↓ Activación amigdalina',  emoji: '🌙' };
+  if (h >= 6.5  && h < 8.5)  return { codigo: 'F2', label: 'Activación matutina',    precursor: 'L-Tirosina (T3-B)',   objetivo: '↑ Dopamina · foco',        emoji: '🌅', ejemplo: 'Huevo + aguacate'     };
+  if (h >= 8.5  && h < 11)   return { codigo: 'F3', label: 'Pico cognitivo',          precursor: 'Colina + Omega-3',    objetivo: '↑ Acetilcolina · memoria', emoji: '🧠', ejemplo: 'Sardinas + nueces'    };
+  if (h >= 11   && h < 15)   return { codigo: 'F4', label: 'Mediodía',                precursor: 'Triptófano + CH',     objetivo: '↑ Serotonina tarde',       emoji: '☀️',   ejemplo: 'Pavo/tofu + arroz'    };
+  if (h >= 15   && h < 17.5) return { codigo: 'F5', label: 'Reactivación vespertina', precursor: 'L-Tirosina + Mg',     objetivo: '2.º pico dopaminérgico',  emoji: '⚡',    ejemplo: 'Almendras + proteína' };
+  if (h >= 19.5 && h < 21.5) return { codigo: 'F7', label: 'Transición crepuscular',  precursor: 'Triptófano nocturno', objetivo: 'Precarga melatonina',       emoji: '🌆', ejemplo: 'Avena + plátano'       };
+  return                             { codigo: 'F8', label: 'Preparación sueño',       precursor: 'Probióticos + GABA',  objetivo: '↓ Activación amigdalina',  emoji: '🌙', ejemplo: 'Kéfir + cacao puro'   };
 }
 
 const FITNESS_GOALS = [
@@ -27,7 +27,28 @@ const FITNESS_GOALS = [
 export default function CuerpoPage() {
   const circadianWindow = getCircadianWindow();
   const [fitnessGoal, setFitnessGoal] = useState('mantener');
+  const [checkinValues, setCheckinValues] = useState({
+    estado_emocional: 5, energia_fisica: 5, horas_sueno: 7, emocion_principal: 'neutral',
+  });
   const [loading, setLoading] = useState(false);
+
+  // Personalize recommendation with last real check-in values
+  useEffect(() => {
+    api.get('/checkins/dashboard/tendencias?dias=30')
+      .then((res) => {
+        const serie = res.data?.serie_temporal;
+        if (serie?.length > 0) {
+          const ultimo = serie[serie.length - 1];
+          setCheckinValues({
+            estado_emocional:  ultimo.estado_emocional  ?? 5,
+            energia_fisica:    ultimo.energia_fisica    ?? 5,
+            horas_sueno:       ultimo.horas_sueno       ?? 7,
+            emocion_principal: ultimo.emocion_principal || 'neutral',
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
   const [analisis, setAnalisis] = useState<Record<string, unknown> | null>(null);
   const [recLoading, setRecLoading] = useState(false);
   const [recomendacion, setRecomendacion] = useState<Record<string, unknown> | null>(null);
@@ -36,7 +57,9 @@ export default function CuerpoPage() {
   const pedirRecomendacion = async () => {
     setRecLoading(true);
     try {
-      const res = await api.post(`/cuerpo/nutricion/recomendacion?estado_emocional=5&emocion_principal=neutral&energia_fisica=5&horas_sueno=7&objetivo=${fitnessGoal}`);
+      const res = await api.post(
+        `/cuerpo/nutricion/recomendacion?estado_emocional=${checkinValues.estado_emocional}&emocion_principal=${checkinValues.emocion_principal}&energia_fisica=${checkinValues.energia_fisica}&horas_sueno=${checkinValues.horas_sueno}&objetivo=${fitnessGoal}`,
+      );
       setRecomendacion(res.data);
       toast.success('Recomendación generada');
     } catch {
@@ -80,6 +103,9 @@ export default function CuerpoPage() {
         <span className="text-emerald-300 font-semibold">{circadianWindow.precursor}</span>
         <span className="text-slate-500">·</span>
         <span className="text-slate-400">{circadianWindow.objetivo}</span>
+        <span className="text-slate-500">·</span>
+        <span className="text-slate-500 text-xs">Ej:</span>
+        <span className="text-emerald-200 italic text-xs">{circadianWindow.ejemplo}</span>
       </div>
 
       {/* Recomendación nutricional sin imagen */}
