@@ -15,6 +15,9 @@ interface Preferences {
   entorno_intensidad: number;
   objetivo_principal: string;
   frecuencia_checkin: string;
+  alergias: string[];
+  preferencia_dieta: string;
+  presupuesto_semanal: string;
 }
 
 const OBJETIVOS = [
@@ -27,15 +30,40 @@ const OBJETIVOS = [
 ];
 
 const FRECUENCIAS = [
-  { value: 'diario', label: 'Diario' },
+  { value: 'diario',        label: 'Diario' },
   { value: 'cada_dos_dias', label: 'Cada 2 días' },
-  { value: 'semanal', label: 'Semanal' },
+  { value: 'semanal',       label: 'Semanal' },
+];
+
+const DIETAS = [
+  { value: 'omnivora',        label: '🍖 Omnívora' },
+  { value: 'vegetariana',     label: '🥗 Vegetariana' },
+  { value: 'vegana',          label: '🌱 Vegana' },
+  { value: 'pescatariana',    label: '🐟 Pescatariana' },
+  { value: 'sin_restriccion', label: '🔓 Sin restricciones' },
+];
+
+const ALERGIAS_PRESET = [
+  { value: 'gluten',       label: 'Gluten' },
+  { value: 'lactosa',      label: 'Lactosa' },
+  { value: 'frutos_secos', label: 'Frutos secos' },
+  { value: 'mariscos',     label: 'Marisco' },
+  { value: 'huevo',        label: 'Huevo' },
+  { value: 'soja',         label: 'Soja' },
+];
+
+const PRESUPUESTOS = [
+  { value: 'bajo',  label: '< 60 €' },
+  { value: 'medio', label: '60–120 €' },
+  { value: 'alto',  label: '> 120 €' },
 ];
 
 export default function ConfiguracionPage() {
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [otraAlergia, setOtraAlergia] = useState('');
+  const [showOtraInput, setShowOtraInput] = useState(false);
 
   useEffect(() => {
     api.get('/preferences/').then((res) => setPrefs(res.data)).catch(() => {});
@@ -51,6 +79,9 @@ export default function ConfiguracionPage() {
         entorno: { activo: prefs.entorno_activo, intensidad: prefs.entorno_intensidad },
         objetivo_principal: prefs.objetivo_principal,
         frecuencia_checkin: prefs.frecuencia_checkin,
+        alergias: prefs.alergias,
+        preferencia_dieta: prefs.preferencia_dieta,
+        presupuesto_semanal: prefs.presupuesto_semanal,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -144,6 +175,143 @@ export default function ConfiguracionPage() {
               </button>
             ))}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Perfil Nutricional */}
+      <Card className="border-slate-700 bg-slate-800/50">
+        <CardHeader>
+          <CardTitle>Perfil Nutricional</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5">
+
+          {/* Dieta */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-slate-300">Tipo de dieta</p>
+            <div className="flex flex-wrap gap-2">
+              {DIETAS.map((d) => (
+                <button
+                  key={d.value}
+                  onClick={() => setPrefs({ ...prefs, preferencia_dieta: d.value })}
+                  className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                    prefs.preferencia_dieta === d.value
+                      ? 'bg-emerald-600/30 border border-emerald-500 text-emerald-200'
+                      : 'bg-slate-700/50 border border-slate-600 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  {d.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Alergias */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-slate-300">Alergias e intolerancias</p>
+            <div className="flex flex-wrap gap-2">
+              {ALERGIAS_PRESET.map((a) => {
+                const active = (prefs.alergias ?? []).includes(a.value);
+                return (
+                  <button
+                    key={a.value}
+                    onClick={() =>
+                      setPrefs({
+                        ...prefs,
+                        alergias: active
+                          ? prefs.alergias.filter((x) => x !== a.value)
+                          : [...(prefs.alergias ?? []), a.value],
+                      })
+                    }
+                    className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                      active
+                        ? 'bg-rose-600/30 border border-rose-500 text-rose-200'
+                        : 'bg-slate-700/50 border border-slate-600 text-slate-300 hover:bg-slate-700'
+                    }`}
+                  >
+                    {a.label}
+                  </button>
+                );
+              })}
+              {/* Custom allergies added by user */}
+              {(prefs.alergias ?? [])
+                .filter((v) => !ALERGIAS_PRESET.some((p) => p.value === v))
+                .map((custom) => (
+                  <button
+                    key={custom}
+                    onClick={() =>
+                      setPrefs({ ...prefs, alergias: prefs.alergias.filter((x) => x !== custom) })
+                    }
+                    className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm bg-rose-600/30 border border-rose-500 text-rose-200"
+                  >
+                    {custom.replace(/_/g, ' ')} <span className="text-xs opacity-70">×</span>
+                  </button>
+                ))}
+              {/* Add custom */}
+              {showOtraInput ? (
+                <div className="flex items-center gap-1">
+                  <input
+                    autoFocus
+                    value={otraAlergia}
+                    onChange={(e) => setOtraAlergia(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const val = otraAlergia.trim().toLowerCase().replace(/\s+/g, '_');
+                        if (val && !(prefs.alergias ?? []).includes(val)) {
+                          setPrefs({ ...prefs, alergias: [...(prefs.alergias ?? []), val] });
+                        }
+                        setOtraAlergia('');
+                        setShowOtraInput(false);
+                      }
+                      if (e.key === 'Escape') { setShowOtraInput(false); setOtraAlergia(''); }
+                    }}
+                    placeholder="ej. kiwi"
+                    className="rounded-lg px-3 py-1.5 text-sm w-28 bg-slate-700 border border-slate-500 text-slate-200 outline-none focus:border-emerald-500"
+                  />
+                  <button
+                    onClick={() => {
+                      const val = otraAlergia.trim().toLowerCase().replace(/\s+/g, '_');
+                      if (val && !(prefs.alergias ?? []).includes(val)) {
+                        setPrefs({ ...prefs, alergias: [...(prefs.alergias ?? []), val] });
+                      }
+                      setOtraAlergia('');
+                      setShowOtraInput(false);
+                    }}
+                    className="rounded-lg px-2.5 py-1.5 text-sm bg-emerald-700/50 border border-emerald-600 text-emerald-200 hover:bg-emerald-700"
+                  >
+                    ＋
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowOtraInput(true)}
+                  className="rounded-lg px-3 py-1.5 text-sm border border-dashed border-slate-600 text-slate-500 hover:text-slate-300 hover:border-slate-500"
+                >
+                  ＋ Otra...
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Presupuesto */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-slate-300">Presupuesto semanal en alimentación</p>
+            <div className="flex gap-2">
+              {PRESUPUESTOS.map((p) => (
+                <button
+                  key={p.value}
+                  onClick={() => setPrefs({ ...prefs, presupuesto_semanal: p.value })}
+                  className={`flex-1 rounded-lg px-3 py-2 text-sm transition-colors ${
+                    prefs.presupuesto_semanal === p.value
+                      ? 'bg-emerald-600/30 border border-emerald-500 text-emerald-200'
+                      : 'bg-slate-700/50 border border-slate-600 text-slate-300 hover:bg-slate-700'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
         </CardContent>
       </Card>
 
