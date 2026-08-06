@@ -185,15 +185,34 @@ function BreathingExercise({ suggestedTechnique = null }: { suggestedTechnique?:
     </Card>
   );
 }
+const CLIMA_EMOJI: Record<string, string> = {
+  sol: '☀️', despejado: '🌤️', nublado: '☁️', lluvia: '🌧️',
+  tormenta: '⛈️', niebla: '🌫️', nieve: '❄️',
+};
 
+// Maps backend técnica string to a TechniqueKey for the breathing exercise
+function mapTecnicaToKey(tecnica: string): TechniqueKey | null {
+  const t = tecnica.toLowerCase();
+  if (t.includes('coherencia') || t.includes('card')) return 'coherencia';
+  if (t.includes('box') || t.includes('caja') || t.includes('cuadrada')) return 'box';
+  return null;
+}
 // ── Main page ────────────────────────────────────────────────────────────────
 
 export default function MentePage() {
-  const sugerencia = getSugerenciaContextual();
+  const [sugerencia, setSugerencia] = useState<ReturnType<typeof getSugerenciaContextual> | null>(null);
   const [intencion, setIntencion] = useState('');
-  const [objetivo, setObjetivo] = useState(sugerencia.objetivo);
+  const [objetivo, setObjetivo] = useState('calma');
   const [loading, setLoading] = useState(false);
   const [meditacion, setMeditacion] = useState<{ guion: string; tecnica: string } | null>(null);
+  const [clima, setClima] = useState<{ temperatura: number; clasificacion: string } | null>(null);
+
+  useEffect(() => {
+    const s = getSugerenciaContextual();
+    setSugerencia(s);
+    setObjetivo(s.objetivo);
+    api.get('/entorno/clima').then((res) => setClima(res.data)).catch(() => {});
+  }, []);
 
   const objetivos = [
     { value: 'calma', label: '🌊 Calma' },
@@ -232,20 +251,22 @@ export default function MentePage() {
       <p className="text-slate-400">Genera una sesión de meditación personalizada basada en tu estado actual.</p>
 
       {/* Contextual banner: weather + time-of-day suggestion (Tabla 3.4 + WEATHER_MOOD_BASELINE) */}
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-blue-700/40 bg-blue-900/20 px-4 py-2.5 text-sm">
-        {clima && (
-          <>
-            <span className="text-slate-300 font-medium">
-              {CLIMA_EMOJI[clima.clasificacion] ?? '🌡️'} {Math.round(clima.temperatura)}°C
-            </span>
-            <span className="text-slate-600">·</span>
-          </>
-        )}
-        <span className="text-blue-300 font-medium">{sugerencia.franja}</span>
-        <span className="text-slate-500">·</span>
-        <span className="text-slate-400">ThriveMind sugiere:</span>
-        <span className="text-blue-300 font-semibold">{sugerencia.etiqueta}</span>
-      </div>
+      {sugerencia && (
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-blue-700/40 bg-blue-900/20 px-4 py-2.5 text-sm">
+          {clima && (
+            <>
+              <span className="text-slate-300 font-medium">
+                {CLIMA_EMOJI[clima.clasificacion] ?? '🌡️'} {Math.round(clima.temperatura)}°C
+              </span>
+              <span className="text-slate-600">·</span>
+            </>
+          )}
+          <span className="text-blue-300 font-medium">{sugerencia.franja}</span>
+          <span className="text-slate-500">·</span>
+          <span className="text-slate-400">ThriveMind sugiere:</span>
+          <span className="text-blue-300 font-semibold">{sugerencia.etiqueta}</span>
+        </div>
+      )}
 
       <Card className="border-slate-700 bg-slate-800/50">
         <CardHeader>

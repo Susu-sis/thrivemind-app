@@ -36,12 +36,19 @@ function getSnacksForWindow(): string[] {
 }
 
 export default function CuerpoPage() {
-  const circadianWindow = getCircadianWindow();
+  const [circadianWindow, setCircadianWindow] = useState<ReturnType<typeof getCircadianWindow> | null>(null);
+  const [snacks, setSnacks] = useState<string[]>([]);
   const [fitnessGoal, setFitnessGoal] = useState('mantener');
   const [checkinValues, setCheckinValues] = useState({
     estado_emocional: 5, energia_fisica: 5, horas_sueno: 7, emocion_principal: 'neutral',
   });
   const [loading, setLoading] = useState(false);
+
+  // Compute time-dependent values client-side only (avoids SSR hydration mismatch)
+  useEffect(() => {
+    setCircadianWindow(getCircadianWindow());
+    setSnacks(getSnacksForWindow());
+  }, []);
 
   // Personalize recommendation with last real check-in values
   useEffect(() => {
@@ -130,26 +137,30 @@ export default function CuerpoPage() {
       <p className="text-slate-400">Analiza un plato con IA o recibe recomendaciones nutricionales personalizadas.</p>
 
       {/* Circadian nutrition banner — Tabla 3.6 T7 window */}
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-emerald-700/40 bg-emerald-900/20 px-4 py-2.5 text-sm">
-        <span className="text-emerald-300 font-medium">{circadianWindow.emoji} {circadianWindow.label}</span>
-        <span className="text-slate-500">·</span>
-        <span className="text-slate-400">{circadianWindow.descripcion}</span>
-        <span className="text-slate-500">·</span>
-        <span className="text-slate-500 text-xs">Prueba:</span>
-        <span className="text-emerald-200 italic text-xs">{circadianWindow.ejemplo}</span>
-      </div>
+      {circadianWindow && (
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-emerald-700/40 bg-emerald-900/20 px-4 py-2.5 text-sm">
+          <span className="text-emerald-300 font-medium">{circadianWindow.emoji} {circadianWindow.label}</span>
+          <span className="text-slate-500">·</span>
+          <span className="text-slate-400">{circadianWindow.descripcion}</span>
+          <span className="text-slate-500">·</span>
+          <span className="text-slate-500 text-xs">Prueba:</span>
+          <span className="text-emerald-200 italic text-xs">{circadianWindow.ejemplo}</span>
+        </div>
+      )}
 
       {/* Snacks funcionales — client-side, T3 block aware (§3.3.2 RF-007) */}
-      <div className="rounded-lg border border-slate-700 bg-slate-800/30 px-4 py-3">
-        <p className="text-sm font-medium text-slate-300 mb-2">🍎 Snacks funcionales para ahora</p>
-        <div className="flex flex-wrap gap-2">
-          {getSnacksForWindow().map((s, i) => (
-            <span key={i} className="text-xs bg-slate-700/60 border border-slate-600 text-slate-300 rounded-full px-3 py-1.5">
-              {s}
-            </span>
-          ))}
+      {snacks.length > 0 && (
+        <div className="rounded-lg border border-slate-700 bg-slate-800/30 px-4 py-3">
+          <p className="text-sm font-medium text-slate-300 mb-2">🍎 Snacks funcionales para ahora</p>
+          <div className="flex flex-wrap gap-2">
+            {snacks.map((s, i) => (
+              <span key={i} className="text-xs bg-slate-700/60 border border-slate-600 text-slate-300 rounded-full px-3 py-1.5">
+                {s}
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Recomendación nutricional sin imagen */}
       <Card className="border-slate-700 bg-slate-800/50">
