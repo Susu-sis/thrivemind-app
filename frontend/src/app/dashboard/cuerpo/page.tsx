@@ -10,12 +10,12 @@ import api from '@/lib/api';
 // Maps current hour to Tabla 3.6 (T7) circadian nutrition window
 function getCircadianWindow() {
   const h = new Date().getHours() + new Date().getMinutes() / 60;
-  if (h >= 6.5  && h < 8.5)  return { codigo: 'F2', label: 'Activación matutina',    precursor: 'L-Tirosina (T3-B)',   objetivo: '↑ Dopamina · foco',        emoji: '🌅', ejemplo: 'Huevo + aguacate'     };
-  if (h >= 8.5  && h < 11)   return { codigo: 'F3', label: 'Pico cognitivo',          precursor: 'Colina + Omega-3',    objetivo: '↑ Acetilcolina · memoria', emoji: '🧠', ejemplo: 'Sardinas + nueces'    };
-  if (h >= 11   && h < 15)   return { codigo: 'F4', label: 'Mediodía',                precursor: 'Triptófano + CH',     objetivo: '↑ Serotonina tarde',       emoji: '☀️',   ejemplo: 'Pavo/tofu + arroz'    };
-  if (h >= 15   && h < 17.5) return { codigo: 'F5', label: 'Reactivación vespertina', precursor: 'L-Tirosina + Mg',     objetivo: '2.º pico dopaminérgico',  emoji: '⚡',    ejemplo: 'Almendras + proteína' };
-  if (h >= 19.5 && h < 21.5) return { codigo: 'F7', label: 'Transición crepuscular',  precursor: 'Triptófano nocturno', objetivo: 'Precarga melatonina',       emoji: '🌆', ejemplo: 'Avena + plátano'       };
-  return                             { codigo: 'F8', label: 'Preparación sueño',       precursor: 'Probióticos + GABA',  objetivo: '↓ Activación amigdalina',  emoji: '🌙', ejemplo: 'Kéfir + cacao puro'   };
+  if (h >= 6.5  && h < 8.5)  return { label: 'Activación matutina',    descripcion: 'Arranca el día con energía y foco mental',                  emoji: '🌅', ejemplo: 'Huevo + aguacate'     };
+  if (h >= 8.5  && h < 11)   return { label: 'Pico cognitivo',          descripcion: 'Tu mejor momento para concentrarte — aliméntate bien ahora', emoji: '🧠', ejemplo: 'Sardinas + nueces'    };
+  if (h >= 11   && h < 15)   return { label: 'Mediodía',                descripcion: 'Tu cuerpo busca equilibrio — hora de una comida completa',   emoji: '☀️', ejemplo: 'Pavo/tofu + arroz'    };
+  if (h >= 15   && h < 17.5) return { label: 'Tarde activa',            descripcion: 'Pequeño bajón de tarde — un snack ahora te reactiva',        emoji: '⚡', ejemplo: 'Almendras + proteína' };
+  if (h >= 19.5 && h < 21.5) return { label: 'Cena ligera',             descripcion: 'Tu cuerpo empieza a prepararse para descansar',              emoji: '🌆', ejemplo: 'Avena + plátano'      };
+  return                             { label: 'Antes de dormir',         descripcion: 'Hora de calmar el cuerpo — evita cenar pesado',              emoji: '🌙', ejemplo: 'Kéfir + cacao puro'   };
 }
 
 const FITNESS_GOALS = [
@@ -97,14 +97,11 @@ export default function CuerpoPage() {
 
       {/* Circadian nutrition banner — Tabla 3.6 T7 window */}
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-emerald-700/40 bg-emerald-900/20 px-4 py-2.5 text-sm">
-        <span className="text-emerald-300 font-medium">{circadianWindow.emoji} {circadianWindow.codigo} · {circadianWindow.label}</span>
+        <span className="text-emerald-300 font-medium">{circadianWindow.emoji} {circadianWindow.label}</span>
         <span className="text-slate-500">·</span>
-        <span className="text-slate-400">Precursor óptimo ahora:</span>
-        <span className="text-emerald-300 font-semibold">{circadianWindow.precursor}</span>
+        <span className="text-slate-400">{circadianWindow.descripcion}</span>
         <span className="text-slate-500">·</span>
-        <span className="text-slate-400">{circadianWindow.objetivo}</span>
-        <span className="text-slate-500">·</span>
-        <span className="text-slate-500 text-xs">Ej:</span>
+        <span className="text-slate-500 text-xs">Prueba:</span>
         <span className="text-emerald-200 italic text-xs">{circadianWindow.ejemplo}</span>
       </div>
 
@@ -156,7 +153,7 @@ export default function CuerpoPage() {
         <CardHeader>
           <CardTitle>
             Analizar un Plato
-            <span className="ml-2 text-xs font-normal text-slate-400 border border-slate-600 rounded px-1.5 py-0.5">Modo 4 — Comida Social</span>
+            <span className="ml-2 text-xs font-normal text-slate-400 border border-slate-600 rounded px-1.5 py-0.5">Comida Social</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
