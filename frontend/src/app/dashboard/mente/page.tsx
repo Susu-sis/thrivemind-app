@@ -61,7 +61,7 @@ function getSugerenciaContextual() {
   return                         { objetivo: 'sueno',    etiqueta: '🌙 Sueño',    franja: 'Noche tardía · preparar el sueño' };
 }
 
-function BreathingExercise() {
+function BreathingExercise({ suggestedTechnique = null }: { suggestedTechnique?: TechniqueKey | null }) {
   const [technique, setTechnique] = useState<TechniqueKey>('coherencia');
   const [running, setRunning] = useState(false);
   const [phaseIdx, setPhaseIdx] = useState(0);
@@ -92,6 +92,11 @@ function BreathingExercise() {
     stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [technique]);
+
+  // Auto-select technique when meditation result suggests one
+  useEffect(() => {
+    if (suggestedTechnique) setTechnique(suggestedTechnique);
+  }, [suggestedTechnique]);
 
   // Drive the timer
   useEffect(() => {
@@ -226,8 +231,16 @@ export default function MentePage() {
       <h1 className="text-2xl font-bold">🧠 Pilar Mente</h1>
       <p className="text-slate-400">Genera una sesión de meditación personalizada basada en tu estado actual.</p>
 
-      {/* Contextual banner: suggests objective based on time of day (Tabla 3.4) */}
-      <div className="flex items-center gap-3 rounded-lg border border-blue-700/40 bg-blue-900/20 px-4 py-2.5 text-sm">
+      {/* Contextual banner: weather + time-of-day suggestion (Tabla 3.4 + WEATHER_MOOD_BASELINE) */}
+      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-blue-700/40 bg-blue-900/20 px-4 py-2.5 text-sm">
+        {clima && (
+          <>
+            <span className="text-slate-300 font-medium">
+              {CLIMA_EMOJI[clima.clasificacion] ?? '🌡️'} {Math.round(clima.temperatura)}°C
+            </span>
+            <span className="text-slate-600">·</span>
+          </>
+        )}
         <span className="text-blue-300 font-medium">{sugerencia.franja}</span>
         <span className="text-slate-500">·</span>
         <span className="text-slate-400">ThriveMind sugiere:</span>
@@ -292,7 +305,7 @@ export default function MentePage() {
         </div>
       )}
 
-      <BreathingExercise />
+      <BreathingExercise suggestedTechnique={meditacion ? mapTecnicaToKey(meditacion.tecnica) : null} />
     </div>
   );
 }
