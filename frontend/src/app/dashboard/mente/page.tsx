@@ -40,6 +40,27 @@ const TECHNIQUES: Record<TechniqueKey, { title: string; subtitle: string; phases
   },
 };
 
+// Maps each objetivo to a complementary HUE profile (§3.3.1 orquestación lumínica)
+const HUE_POR_OBJETIVO: Record<string, { perfil: string; kelvin: number; brillo: number }> = {
+  calma:    { perfil: 'Meditación Calma',    kelvin: 2700, brillo: 40 },
+  enfoque:  { perfil: 'Trabajo Productivo',  kelvin: 5000, brillo: 80 },
+  gratitud: { perfil: 'Naturaleza Indoor',   kelvin: 4500, brillo: 65 },
+  energia:  { perfil: 'Trabajo Productivo',  kelvin: 5000, brillo: 80 },
+  sueno:    { perfil: 'Lectura Nocturna',    kelvin: 2500, brillo: 30 },
+  ansiedad: { perfil: 'Relajación Profunda', kelvin: 2200, brillo: 20 },
+};
+
+// Derives suggested objetivo from current hour (Tabla 3.4 contextual adaptation)
+function getSugerenciaContextual() {
+  const h = new Date().getHours();
+  if (h >= 6  && h < 9)  return { objetivo: 'enfoque',  etiqueta: '🎯 Enfoque',  franja: 'Amanecer · sesión de activación' };
+  if (h >= 9  && h < 12) return { objetivo: 'energia',  etiqueta: '⚡ Energía',  franja: 'Mañana · boost mental' };
+  if (h >= 12 && h < 16) return { objetivo: 'calma',    etiqueta: '🌊 Calma',    franja: 'Mediodía · reset de 5 min' };
+  if (h >= 16 && h < 19) return { objetivo: 'gratitud', etiqueta: '🙏 Gratitud', franja: 'Tarde · momento de reflexión' };
+  if (h >= 19 && h < 22) return { objetivo: 'calma',    etiqueta: '🌊 Calma',    franja: 'Noche · transición y desconexión' };
+  return                         { objetivo: 'sueno',    etiqueta: '🌙 Sueño',    franja: 'Noche tardía · preparar el sueño' };
+}
+
 function BreathingExercise() {
   const [technique, setTechnique] = useState<TechniqueKey>('coherencia');
   const [running, setRunning] = useState(false);
@@ -163,8 +184,9 @@ function BreathingExercise() {
 // ── Main page ────────────────────────────────────────────────────────────────
 
 export default function MentePage() {
+  const sugerencia = getSugerenciaContextual();
   const [intencion, setIntencion] = useState('');
-  const [objetivo, setObjetivo] = useState('calma');
+  const [objetivo, setObjetivo] = useState(sugerencia.objetivo);
   const [loading, setLoading] = useState(false);
   const [meditacion, setMeditacion] = useState<{ guion: string; tecnica: string } | null>(null);
 
@@ -203,6 +225,14 @@ export default function MentePage() {
     <div className="max-w-3xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">🧠 Pilar Mente</h1>
       <p className="text-slate-400">Genera una sesión de meditación personalizada basada en tu estado actual.</p>
+
+      {/* Contextual banner: suggests objective based on time of day (Tabla 3.4) */}
+      <div className="flex items-center gap-3 rounded-lg border border-blue-700/40 bg-blue-900/20 px-4 py-2.5 text-sm">
+        <span className="text-blue-300 font-medium">{sugerencia.franja}</span>
+        <span className="text-slate-500">·</span>
+        <span className="text-slate-400">ThriveMind sugiere:</span>
+        <span className="text-blue-300 font-semibold">{sugerencia.etiqueta}</span>
+      </div>
 
       <Card className="border-slate-700 bg-slate-800/50">
         <CardHeader>
@@ -244,6 +274,22 @@ export default function MentePage() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* HUE luminary suggestion tied to the meditation objective (§3.3.1 orquestación ambiental) */}
+      {meditacion && HUE_POR_OBJETIVO[objetivo] && (
+        <div className="flex items-center gap-3 rounded-lg border border-amber-700/40 bg-amber-900/10 px-4 py-3">
+          <span className="text-amber-400 text-xl">💡</span>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-amber-300">Escena lumínica para esta sesión</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {HUE_POR_OBJETIVO[objetivo].perfil} · {HUE_POR_OBJETIVO[objetivo].kelvin}K · {HUE_POR_OBJETIVO[objetivo].brillo}% intensidad
+            </p>
+          </div>
+          <a href="/dashboard/perfiles-hue" className="text-xs text-amber-400 hover:text-amber-300 hover:underline whitespace-nowrap">
+            Configurar HUE →
+          </a>
+        </div>
       )}
 
       <BreathingExercise />
