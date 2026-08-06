@@ -82,7 +82,7 @@ export default function CuerpoPage() {
         <span className="text-slate-400">{circadianWindow.objetivo}</span>
       </div>
 
-      {/* Recomendación nutricional sin imagen */
+      {/* Recomendación nutricional sin imagen */}
       <Card className="border-slate-700 bg-slate-800/50">
         <CardHeader>
           <CardTitle>Recomendación Nutricional IA</CardTitle>
