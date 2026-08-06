@@ -206,6 +206,8 @@ export default function MentePage() {
   const [loading, setLoading] = useState(false);
   const [meditacion, setMeditacion] = useState<{ guion: string; tecnica: string } | null>(null);
   const [clima, setClima] = useState<{ temperatura: number; clasificacion: string } | null>(null);
+  const [feedbackScore, setFeedbackScore] = useState<number | null>(null);
+  const [feedbackSaved, setFeedbackSaved] = useState(false);
 
   useEffect(() => {
     const s = getSugerenciaContextual();
@@ -237,11 +239,29 @@ export default function MentePage() {
         generar_audio: false,
       });
       setMeditacion(res.data);
+      setFeedbackScore(null);
+      setFeedbackSaved(false);
       toast.success('Meditación generada con éxito');
     } catch {
       toast.error('Error al generar la meditación');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const submitFeedback = async (score: number) => {
+    setFeedbackScore(score);
+    try {
+      await api.post('/checkins', {
+        estado_emocional: score,
+        energia_fisica: 5,
+        horas_sueno: 7,
+        emocion_principal: 'post_meditacion',
+      });
+    } catch {
+      // silent — feedback is best-effort
+    } finally {
+      setFeedbackSaved(true);
     }
   };
 
@@ -324,6 +344,31 @@ export default function MentePage() {
             Configurar HUE →
           </a>
         </div>
+      )}
+
+      {/* Post-session feedback — RF-009 user_feedback_score */}
+      {meditacion && !feedbackSaved && (
+        <div className="rounded-lg border border-slate-700 bg-slate-800/30 px-4 py-4">
+          <p className="text-sm font-medium text-slate-300 mb-3">¿Cómo te sientes después de la meditación?</p>
+          <div className="flex gap-3 justify-center">
+            {['😞', '😕', '😐', '🙂', '😊'].map((emoji, i) => (
+              <button
+                key={i}
+                onClick={() => submitFeedback(i + 1)}
+                className={`text-2xl rounded-lg px-3 py-2 transition-all hover:scale-110 ${
+                  feedbackScore === i + 1
+                    ? 'bg-violet-600/30 border border-violet-500'
+                    : 'hover:bg-slate-700/50'
+                }`}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {meditacion && feedbackSaved && (
+        <p className="text-center text-sm text-emerald-400">✓ Gracias por tu feedback</p>
       )}
 
       <BreathingExercise suggestedTechnique={meditacion ? mapTecnicaToKey(meditacion.tecnica) : null} />
