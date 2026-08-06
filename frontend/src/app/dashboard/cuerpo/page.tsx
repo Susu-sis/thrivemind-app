@@ -24,6 +24,17 @@ const FITNESS_GOALS = [
   { value: 'mantener',   label: '⚖️ Mantener'   },
 ];
 
+// Client-side snack suggestions anchored to T3 block (Tabla 3.6 + §3.3.2)
+function getSnacksForWindow(): string[] {
+  const h = new Date().getHours() + new Date().getMinutes() / 60;
+  if (h >= 6.5  && h < 8.5)  return ['🥚 Huevo + aguacate',         '🥣 Yogur griego + nueces',   '🥤 Batido de proteína'];
+  if (h >= 8.5  && h < 11)   return ['🌰 Nueces del Brasil',         '�ae6️ Arándanos + almendras',    '🐟 Salmón ahumado'];
+  if (h >= 11   && h < 15)   return ['🍏 Manzana + cacahuete',       '🥝 Hummus + zanahoria',         '🧀 Queso cottage'];
+  if (h >= 15   && h < 17.5) return ['🍫 Almendras + choco 85 %', '🍌 Plátano + mantequilla',     '🪫 Dátiles + nueces'];
+  if (h >= 19.5 && h < 21.5) return ['🥛 Kéfir + plátano',           '🌿 Manzanilla + miel',           '🌾 Avena con canela'];
+  return                             ['🥛 Kéfir natural',              '🍫 Cacao puro + nueces',         '🌿 Infusión de valeriana'];
+}
+
 export default function CuerpoPage() {
   const circadianWindow = getCircadianWindow();
   const [fitnessGoal, setFitnessGoal] = useState('mantener');
@@ -53,6 +64,9 @@ export default function CuerpoPage() {
   const [recLoading, setRecLoading] = useState(false);
   const [recomendacion, setRecomendacion] = useState<Record<string, unknown> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [despensaAnalisis, setDespensaAnalisis] = useState<Record<string, unknown> | null>(null);
+  const [despensaLoading, setDespensaLoading] = useState(false);
+  const despensaInputRef = useRef<HTMLInputElement>(null);
 
   const pedirRecomendacion = async () => {
     setRecLoading(true);
@@ -90,6 +104,26 @@ export default function CuerpoPage() {
     }
   };
 
+  const handleDespensaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    setDespensaLoading(true);
+    try {
+      const res = await api.post('/cuerpo/despensa/analizar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setDespensaAnalisis(res.data);
+      toast.success('Despensa analizada');
+    } catch {
+      toast.error('Error al analizar la despensa');
+    } finally {
+      setDespensaLoading(false);
+      if (despensaInputRef.current) despensaInputRef.current.value = '';
+    }
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">💚 Pilar Cuerpo</h1>
@@ -103,6 +137,18 @@ export default function CuerpoPage() {
         <span className="text-slate-500">·</span>
         <span className="text-slate-500 text-xs">Prueba:</span>
         <span className="text-emerald-200 italic text-xs">{circadianWindow.ejemplo}</span>
+      </div>
+
+      {/* Snacks funcionales — client-side, T3 block aware (§3.3.2 RF-007) */}
+      <div className="rounded-lg border border-slate-700 bg-slate-800/30 px-4 py-3">
+        <p className="text-sm font-medium text-slate-300 mb-2">🍎 Snacks funcionales para ahora</p>
+        <div className="flex flex-wrap gap-2">
+          {getSnacksForWindow().map((s, i) => (
+            <span key={i} className="text-xs bg-slate-700/60 border border-slate-600 text-slate-300 rounded-full px-3 py-1.5">
+              {s}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Recomendación nutricional sin imagen */}
@@ -197,6 +243,26 @@ export default function CuerpoPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Análisis de despensa — RF-006 */}
+      <Card className="border-slate-700 bg-slate-800/50">
+        <CardHeader>
+          <CardTitle>📦 Analizar mi Despensa</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-slate-400">Sube una foto de tu despensa y la IA identifica ingredientes disponibles para optimizar tus recetas semanales.</p>
+          <input ref={despensaInputRef} type="file" accept="image/*" className="hidden" onChange={handleDespensaUpload} />
+          <Button className="w-full" variant="outline" onClick={() => despensaInputRef.current?.click()} disabled={despensaLoading}>
+            {despensaLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
+            {despensaLoading ? 'Analizando...' : 'Fotografiar Despensa'}
+          </Button>
+          {despensaAnalisis && (
+            <div className="mt-4 p-3 rounded-lg bg-emerald-900/20 border border-emerald-700/30 text-sm text-slate-200 whitespace-pre-wrap">
+              {despensaAnalisis.analisis_texto as string}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -92,6 +92,32 @@ async def recomendacion_nutricional(
     return resultado
 
 
+@router.post("/despensa/analizar", summary="Analizar despensa con GPT-4o Vision (RF-006)")
+async def analizar_despensa(
+    file: UploadFile = File(...),
+    current_user=Depends(get_current_user),
+):
+    if settings.environment == "demo":
+        return {
+            "ingredientes_detectados": [
+                "Pollo", "Arroz integral", "Brócoli", "Huevos", "Avena",
+                "Tomates cherry", "Espinacas", "Ajo", "Aceite de oliva", "Yogur griego",
+            ],
+            "analisis_texto": (
+                "Despensa bien surtida con buena base proteíca y carbohidratos complejos.\n"
+                "Detectados: Pollo + Arroz integral (T3-B y T3-D), Huevos (L-Tirosina + colina),"
+                " Avena (troptófano nocturno).\nSugerencia: añade almendras y kéfir para cubrir el ciclo circadiano completo.\n\n"
+                "[Análisis de demostración \u2014 con OpenAI key, GPT-4o Vision analizará tu despensa real.]"
+            ),
+            "recetas_sugeridas": ["Arroz con pollo al limón", "Bowl de espinacas con huevo", "Avena nocturna con plátano"],
+        }
+
+    contents = await file.read()
+    imagen_base64 = base64.b64encode(contents).decode("utf-8")
+    analisis = await analizar_imagen_nutricional(imagen_base64)
+    return analisis
+
+
 @router.get("/nutricion/historial", summary="Historial de análisis nutricionales")
 async def historial_nutricion(
     limit: int = 10,
