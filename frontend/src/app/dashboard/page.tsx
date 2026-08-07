@@ -111,7 +111,7 @@ export default function DashboardPage() {
               </Link>
             ))}
           </div>
-          <p className="text-xs text-slate-500 mt-2">Ctrl+K para buscar globalmente | Datos demo con 14 check-ins simulados</p>
+          <p className="text-xs text-slate-500 mt-2">Ctrl+K para buscar globalmente | {totalCheckins > 0 ? `${totalCheckins} check-in${totalCheckins !== 1 ? 's' : ''} registrado${totalCheckins !== 1 ? 's' : ''}` : 'A\u00f1ade tu primer check-in para activar la IA'}</p>
         </CardContent>
       </Card>
 
@@ -159,14 +159,14 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Radar Chart: Promedios por pilar */}
+        {/* Radar Chart: Promedios por pilar — s\u00f3lo 3 pilares, sue\u00f1o es modulador no pilar aut\u00f3nomo */}
         <Card className="border-slate-700 bg-slate-800/50">
           <CardHeader>
             <CardTitle className="text-lg">Balance de pilares</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <RadarChart data={data.promedios_pilares}>
+              <RadarChart data={data.promedios_pilares.filter((p) => p.pilar !== 'Sue\u00f1o' && p.pilar !== 'sueno' && p.pilar !== 'horas_sueno')}>
                 <PolarGrid stroke="#334155" />
                 <PolarAngleAxis dataKey="pilar" stroke="#94a3b8" fontSize={12} />
                 <PolarRadiusAxis domain={[0, 10]} stroke="#475569" />

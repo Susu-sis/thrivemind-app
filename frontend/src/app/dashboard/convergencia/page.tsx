@@ -109,9 +109,9 @@ export default function ConvergenciaPage() {
         </div>
       </div>
 
-      {/* Pillar score cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {pillars.map(({ key, label, emoji }) => {
+      {/* Pillar score cards — 3 main pillars only */}
+      <div className="grid grid-cols-3 gap-4">
+        {pillars.filter((p) => p.key !== 'sueno').map(({ key, label, emoji }) => {
           const score = data.pillar_scores[key as keyof PillarScores];
           return (
             <Card key={key} className="bg-slate-800/50 border-slate-700">
@@ -124,6 +124,16 @@ export default function ConvergenciaPage() {
             </Card>
           );
         })}
+      </div>
+
+      {/* Sueño — indicador transversal (influye en los 3 pilares, no es un pilar autónomo) */}
+      <div className="flex items-center gap-4 rounded-lg border border-slate-700/50 bg-slate-800/30 px-4 py-3">
+        <span className="text-2xl">😴</span>
+        <div className="flex-1">
+          <p className="text-sm text-slate-400">Sueño <span className="text-xs text-slate-500">· indicador transversal</span></p>
+          <p className={`text-xl font-bold ${scoreColor(data.pillar_scores.sueno)}`}>{data.pillar_scores.sueno}<span className="text-xs text-slate-500 ml-1">/10</span></p>
+        </div>
+        <p className="text-xs text-slate-500 max-w-48 text-right">El sueño no es un pilar independiente — actúa como modulador de los tres.</p>
       </div>
 
       {/* Convergence line chart */}
