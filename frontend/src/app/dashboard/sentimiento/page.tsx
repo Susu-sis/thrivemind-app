@@ -58,7 +58,7 @@ export default function SentimientoPage() {
   if (!data || data.total_notes_analyzed === 0) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold">💬 Análisis de Sentimiento</h1>
+        <h1 className="text-2xl font-bold">� Diario Inteligente</h1>
         <Card className="bg-slate-800/50 border-slate-700">
           <CardContent className="p-8 text-center text-slate-400">
             <p>No hay notas personales en tus check-ins recientes. Agrega notas para ver el análisis.</p>
@@ -80,8 +80,8 @@ export default function SentimientoPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">💬 Análisis de Sentimiento</h1>
-          <p className="text-slate-400 mt-1">Emociones detectadas en tus notas de check-in</p>
+          <h1 className="text-2xl font-bold">� Diario Inteligente</h1>
+          <p className="text-slate-400 mt-1">Análisis de emociones detectadas en tus notas de check-in</p>
         </div>
         <div className="flex gap-2">
           {[7, 14, 30].map((d) => (

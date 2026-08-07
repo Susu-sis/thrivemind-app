@@ -107,6 +107,8 @@ export default function EntornoPage() {
     try {
       await api.delete(`/entorno/cultivos/${id}`);
       setCultivos((prev) => prev.filter((c) => c.id !== id));
+      // Award gamification points (fire-and-forget)
+      api.post('/gamification/award?action=cosecha_registrada').catch(() => {});
       toast.success(`✅ ¡${nombre} cosechada! Úsala fresca — ve al Pilar Cuerpo para recetas.`);
     } catch {
       toast.error('Error al registrar la cosecha');

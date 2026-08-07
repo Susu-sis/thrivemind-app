@@ -241,6 +241,8 @@ export default function MentePage() {
       setMeditacion(res.data);
       setFeedbackScore(null);
       setFeedbackSaved(false);
+      // Award gamification points (fire-and-forget)
+      api.post('/gamification/award?action=meditacion_completada').catch(() => {});
       toast.success('Meditación generada con éxito');
     } catch {
       toast.error('Error al generar la meditación');

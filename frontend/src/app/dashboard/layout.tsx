@@ -43,7 +43,7 @@ const NAV_GROUPS: NavGroup[] = [
       { href: '/dashboard/convergencia',  label: 'Convergencia',    emoji: '📈' },
       { href: '/dashboard/correlaciones', label: 'Correlaciones',   emoji: '🔗' },
       { href: '/dashboard/historial',     label: 'Historial',       emoji: '📜' },
-      { href: '/dashboard/sentimiento',   label: 'Sentimiento',     emoji: '💬' },
+      { href: '/dashboard/sentimiento',   label: 'Diario Inteligente', emoji: '📔' },
       { href: '/dashboard/gamificacion',  label: 'Gamificación',    emoji: '🏆' },
     ],
   },

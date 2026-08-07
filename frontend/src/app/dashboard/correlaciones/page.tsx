@@ -56,6 +56,10 @@ export default function CorrelacionesPage() {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">🔗 Matriz de Interdependencias</h1>
+        <div className="mt-1 flex items-center gap-2">
+          <span className="text-xs bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 px-2 py-0.5 rounded">⭐ Pantalla estrella del TFM</span>
+          <p className="text-slate-400 text-sm">Correlaciones de Pearson entre los pilares de bienestar + interpretación IA</p>
+        </div>
         <Card className="bg-slate-800/50 border-slate-700">
           <CardContent className="p-8 text-center text-slate-400">
             <p>Necesitas al menos 5 check-ins. Actualmente: {data?.n_checkins ?? 0}</p>
@@ -94,7 +98,10 @@ export default function CorrelacionesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">🔗 Matriz de Interdependencias</h1>
-          <p className="text-slate-400 mt-1">Correlaciones de Pearson entre todas las dimensiones de bienestar</p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 px-2 py-0.5 rounded">⭐ Pantalla estrella del TFM</span>
+            <p className="text-slate-400 text-sm">Correlaciones de Pearson + interpretación IA</p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex gap-2">

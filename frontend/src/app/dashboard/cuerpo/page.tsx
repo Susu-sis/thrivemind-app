@@ -103,6 +103,7 @@ export default function CuerpoPage() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setAnalisis(res.data);
+      api.post('/gamification/award?action=receta_analizada').catch(() => {});
       toast.success('Plato analizado con éxito');
     } catch {
       toast.error('Error al analizar la imagen');

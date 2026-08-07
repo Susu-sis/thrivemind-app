@@ -126,14 +126,13 @@ export default function ConvergenciaPage() {
         })}
       </div>
 
-      {/* Sueño — indicador transversal (influye en los 3 pilares, no es un pilar autónomo) */}
+      {/* Sueño — indicador transversal */}
       <div className="flex items-center gap-4 rounded-lg border border-slate-700/50 bg-slate-800/30 px-4 py-3">
         <span className="text-2xl">😴</span>
         <div className="flex-1">
           <p className="text-sm text-slate-400">Sueño <span className="text-xs text-slate-500">· indicador transversal</span></p>
           <p className={`text-xl font-bold ${scoreColor(data.pillar_scores.sueno)}`}>{data.pillar_scores.sueno}<span className="text-xs text-slate-500 ml-1">/10</span></p>
         </div>
-        <p className="text-xs text-slate-500 max-w-48 text-right">El sueño no es un pilar independiente — actúa como modulador de los tres.</p>
       </div>
 
       {/* Convergence line chart */}

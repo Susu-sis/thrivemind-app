@@ -69,10 +69,11 @@ export default function CheckinPage() {
       setResult(classify.data);
     } catch {
       // silent
-    } finally {
-      toast.success('Check-in guardado correctamente');
-      setLoading(false);
     }
+    // Award gamification points (fire-and-forget)
+    api.post('/gamification/award?action=checkin_diario').catch(() => {});
+    toast.success('Check-in guardado correctamente');
+    setLoading(false);
   };
 
   return (

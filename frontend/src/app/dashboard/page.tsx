@@ -94,7 +94,7 @@ export default function DashboardPage() {
               { href: '/dashboard/insights', label: 'Insights', emoji: '🔍' },
               { href: '/dashboard/convergencia', label: 'Convergencia', emoji: '📐' },
               { href: '/dashboard/correlaciones', label: 'Correlaciones', emoji: '🔗' },
-              { href: '/dashboard/sentimiento', label: 'Sentimiento', emoji: '💬' },
+              { href: '/dashboard/sentimiento', label: 'Diario Inteligente', emoji: '📔' },
               { href: '/dashboard/gamificacion', label: 'Gamificación', emoji: '🏆' },
               { href: '/dashboard/meal-planner', label: 'Plan Comidas', emoji: '🍽️' },
               { href: '/dashboard/perfiles-hue', label: 'Perfiles HUE', emoji: '💡' },
