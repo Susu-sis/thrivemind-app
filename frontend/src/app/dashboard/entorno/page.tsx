@@ -310,6 +310,18 @@ export default function EntornoPage() {
       <div className="space-y-3">
         <div className="rounded-lg border border-dashed border-slate-600 bg-slate-800/20 p-4">
           <div className="flex items-start gap-3">
+            <span className="text-xl">🔬</span>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium text-slate-300">Análisis de microclima</p>
+                <span className="text-[10px] bg-violet-800/40 border border-violet-600/40 text-violet-300 px-1.5 py-0.5 rounded">Fase 2</span>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">Fotografiar tu espacio: GPT-4o Vision analiza luz, sombras y dimensiones para recomendar las plantas ideales para tu rincón.</p>
+            </div>
+          </div>
+        </div>
+        <div className="rounded-lg border border-dashed border-slate-600 bg-slate-800/20 p-4">
+          <div className="flex items-start gap-3">
             <span className="text-xl">🍽️</span>
             <div>
               <div className="flex items-center gap-2">

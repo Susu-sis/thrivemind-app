@@ -223,10 +223,10 @@ export default function CuerpoPage() {
       {/* Análisis de imagen — Modo 4 Comida Social */}
       <Card className="border-slate-700 bg-slate-800/50">
         <CardHeader>
-          <CardTitle>
-            Analizar un Plato
-            <span className="ml-2 text-xs font-normal text-slate-400 border border-slate-600 rounded px-1.5 py-0.5">Comida Social</span>
-          </CardTitle>
+          <div className="flex items-center gap-2">
+            <CardTitle>Analizar un Plato</CardTitle>
+            <span className="text-xs font-normal text-slate-400 border border-slate-600 rounded px-1.5 py-0.5">Comida Social</span>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-400">Sube una foto de tu comida y GPT-4o la analizará nutricionalmente.</p>

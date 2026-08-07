@@ -78,7 +78,10 @@ export default function CheckinPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Check-in de Bienestar</h1>
+      <div>
+        <h1 className="text-2xl font-bold">✍️ Check-in de Bienestar</h1>
+        <p className="text-sm text-slate-400 mt-1">Tu entrada diaria al <span className="text-violet-300">Diario Inteligente</span> — alimenta los 3 pilares y genera tu clasificación emocional.</p>
+      </div>
 
       {/* ── Classification result card ── */}
       {result && (() => {
