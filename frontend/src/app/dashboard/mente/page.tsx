@@ -208,6 +208,8 @@ export default function MentePage() {
   const [clima, setClima] = useState<{ temperatura: number; clasificacion: string } | null>(null);
   const [feedbackScore, setFeedbackScore] = useState<number | null>(null);
   const [feedbackSaved, setFeedbackSaved] = useState(false);
+  const [preMedScore, setPreMedScore] = useState<number | null>(null);
+  const [preMedSaved, setPreMedSaved] = useState(false);
 
   useEffect(() => {
     const s = getSugerenciaContextual();
@@ -267,6 +269,12 @@ export default function MentePage() {
     }
   };
 
+  const savePreMed = async (score: number) => {
+    setPreMedScore(score);
+    api.post('/checkins', { estado_emocional: score, energia_fisica: 5, horas_sueno: 7, emocion_principal: 'pre_meditacion' }).catch(() => {});
+    setPreMedSaved(true);
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">🧠 Pilar Mente</h1>
@@ -308,6 +316,24 @@ export default function MentePage() {
           <CardTitle>Nueva Meditación</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Pre-meditation contextual check-in (§3.4.1) */}
+          <div className="rounded-lg border border-slate-700/50 bg-slate-800/20 px-3 py-2.5">
+            <p className="text-xs text-slate-400 mb-2">¿Cómo estás <span className="font-medium text-slate-300">antes</span> de meditar? <span className="text-slate-600">· Diario Inteligente</span></p>
+            {!preMedSaved ? (
+              <div className="flex gap-2">
+                {['😔', '😕', '😐', '🙂', '😊'].map((emoji, i) => (
+                  <button key={i} onClick={() => savePreMed(i * 2 + 2)}
+                    className={`text-xl rounded-lg px-2 py-1 transition-all hover:scale-110 hover:bg-slate-700/50 ${
+                      preMedScore === i * 2 + 2 ? 'bg-violet-600/30 border border-violet-500' : ''
+                    }`}>
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-emerald-400">✓ Estado pre-meditación guardado</p>
+            )}
+          </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">¿Cuál es tu intención?</label>
             <Input placeholder="Ej: quiero soltar el estrés del trabajo" value={intencion}

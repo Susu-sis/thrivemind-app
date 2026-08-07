@@ -60,6 +60,10 @@ export default function EntornoPage() {
   const [consejoLoading, setConsejoLoading] = useState(false);
   const [consulta, setConsulta] = useState('');
   const [cosechando, setCosechando] = useState<Set<string>>(new Set());
+  const [cosechaFlowId, setCosechaFlowId] = useState<string | null>(null);
+  const [cosechaFlowStep, setCosechaFlowStep] = useState<'pre' | 'post' | null>(null);
+  const [cosechaFlowNombre, setCosechaFlowNombre] = useState('');
+  const [cosechaPostSaved, setCosechaPostSaved] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -117,6 +121,22 @@ export default function EntornoPage() {
     }
   };
 
+  const iniciarCosecha = (id: string, nombre: string) => {
+    setCosechaFlowId(id); setCosechaFlowStep('pre'); setCosechaFlowNombre(nombre); setCosechaPostSaved(false);
+  };
+
+  const handlePreCosecha = async (score: number) => {
+    api.post('/checkins', { estado_emocional: score, energia_fisica: 5, horas_sueno: 7, emocion_principal: 'pre_cosecha' }).catch(() => {});
+    setCosechaFlowStep(null);
+    await registrarCosecha(cosechaFlowId!, cosechaFlowNombre);
+    setCosechaFlowStep('post');
+  };
+
+  const handlePostCosecha = async (score: number) => {
+    api.post('/checkins', { estado_emocional: score, energia_fisica: 5, horas_sueno: 7, emocion_principal: 'post_cosecha' }).catch(() => {});
+    setCosechaPostSaved(true);
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center h-full text-slate-400"><Loader2 className="animate-spin" /></div>;
   }
@@ -136,6 +156,25 @@ export default function EntornoPage() {
     <div className="max-w-3xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">🌱 Pilar Entorno</h1>
       <p className="text-slate-400">Micro-farming urbano y conexión con la naturaleza.</p>
+
+      {/* Post-cosecha contextual check-in banner (§3.4.1) */}
+      {cosechaFlowStep === 'post' && (
+        <div className="rounded-lg border border-emerald-700/40 bg-emerald-900/10 px-4 py-3 space-y-2">
+          <p className="text-sm text-slate-300">🌱 ¡{cosechaFlowNombre} cosechada! ¿Cómo te sientes <span className="font-medium text-emerald-300">ahora</span>? <span className="text-slate-600 text-xs">· Diario Inteligente</span></p>
+          {!cosechaPostSaved ? (
+            <div className="flex gap-2">
+              {['😔', '😕', '😐', '🙂', '😊'].map((emoji, i) => (
+                <button key={i} onClick={() => handlePostCosecha(i * 2 + 2)}
+                  className="text-xl rounded-lg px-2 py-1 hover:bg-emerald-700/30 hover:scale-110 transition-all">
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-emerald-400">✓ Registro guardado en tu Diario</p>
+          )}
+        </div>
+      )}
 
       {/* Notificación proactiva — Edge Function activa en producción (cron 0 20 * * *) */}
       <div className="flex items-start gap-3 rounded-lg border border-amber-700/40 bg-amber-900/10 px-4 py-3">
@@ -194,14 +233,28 @@ export default function EntornoPage() {
                     <span>ILD D+{elapsed}{ildLeft > 0 ? ` · pico dopaminérgico en ${ildLeft} días` : ' · ¡en el pico — buen momento para cosechar!'}</span>
                   </div>
                   <div className="flex gap-2 pt-1">
-                    <button
-                      onClick={() => registrarCosecha(c.id, c.nombre_planta)}
-                      disabled={cosechando.has(c.id)}
-                      className="flex-1 text-xs bg-emerald-700/30 border border-emerald-600/40 text-emerald-300 px-2 py-1.5 rounded hover:bg-emerald-700/50 disabled:opacity-50 transition-colors"
-                    >
-                      {cosechando.has(c.id) ? <Loader2 className="w-3 h-3 animate-spin inline mr-1" /> : null}
-                      ✅ Registrar cosecha
-                    </button>
+                    {cosechaFlowId === c.id && cosechaFlowStep === 'pre' ? (
+                      <div className="flex-1 rounded-lg bg-emerald-900/10 border border-emerald-700/30 px-3 py-2 space-y-1.5">
+                        <p className="text-xs text-slate-400">¿Cómo estás <span className="text-slate-200 font-medium">antes</span> de cosechar? <span className="text-slate-600">· Diario Inteligente</span></p>
+                        <div className="flex gap-1.5">
+                          {['😔', '😕', '😐', '🙂', '😊'].map((emoji, i) => (
+                            <button key={i} onClick={() => handlePreCosecha(i * 2 + 2)}
+                              className="text-lg rounded px-2 py-0.5 hover:bg-emerald-700/30 hover:scale-110 transition-all">
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => iniciarCosecha(c.id, c.nombre_planta)}
+                        disabled={cosechando.has(c.id)}
+                        className="flex-1 text-xs bg-emerald-700/30 border border-emerald-600/40 text-emerald-300 px-2 py-1.5 rounded hover:bg-emerald-700/50 disabled:opacity-50 transition-colors"
+                      >
+                        {cosechando.has(c.id) ? <Loader2 className="w-3 h-3 animate-spin inline mr-1" /> : null}
+                        ✅ Registrar cosecha
+                      </button>
+                    )}
                     <button
                       onClick={() => eliminarCultivo(c.id, c.nombre_planta)}
                       className="text-red-400 hover:text-red-300 text-xs px-2 py-1 rounded hover:bg-red-900/30 transition-colors"

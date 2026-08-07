@@ -74,6 +74,9 @@ export default function CuerpoPage() {
   const [despensaAnalisis, setDespensaAnalisis] = useState<Record<string, unknown> | null>(null);
   const [despensaLoading, setDespensaLoading] = useState(false);
   const despensaInputRef = useRef<HTMLInputElement>(null);
+  const [preComidaScore, setPreComidaScore] = useState<number | null>(null);
+  const [preComidaSaved, setPreComidaSaved] = useState(false);
+  const [postComidaSaved, setPostComidaSaved] = useState(false);
 
   const pedirRecomendacion = async () => {
     setRecLoading(true);
@@ -88,6 +91,17 @@ export default function CuerpoPage() {
     } finally {
       setRecLoading(false);
     }
+  };
+
+  const savePreComida = (score: number) => {
+    setPreComidaScore(score);
+    api.post('/checkins', { estado_emocional: score, energia_fisica: 5, horas_sueno: 7, emocion_principal: 'pre_comida' }).catch(() => {});
+    setPreComidaSaved(true);
+  };
+
+  const savePostComida = (score: number) => {
+    api.post('/checkins', { estado_emocional: score, energia_fisica: 5, horas_sueno: 7, emocion_principal: 'post_comida' }).catch(() => {});
+    setPostComidaSaved(true);
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -229,6 +243,24 @@ export default function CuerpoPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Pre-comida contextual check-in (§3.4.1) */}
+          <div className="rounded-lg border border-slate-700/50 bg-slate-800/20 px-3 py-2.5">
+            <p className="text-xs text-slate-400 mb-2">¿Cómo estás <span className="font-medium text-slate-300">antes</span> de comer? <span className="text-slate-600">· Diario Inteligente</span></p>
+            {!preComidaSaved ? (
+              <div className="flex gap-2">
+                {['😔', '😕', '😐', '🙂', '😊'].map((emoji, i) => (
+                  <button key={i} onClick={() => savePreComida(i * 2 + 2)}
+                    className={`text-xl rounded-lg px-2 py-1 transition-all hover:scale-110 hover:bg-slate-700/50 ${
+                      preComidaScore === i * 2 + 2 ? 'bg-emerald-600/20 border border-emerald-600/40' : ''
+                    }`}>
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-emerald-400">✓ Estado pre-comida guardado</p>
+            )}
+          </div>
           <p className="text-sm text-slate-400">Sube una foto de tu comida y GPT-4o la analizará nutricionalmente.</p>
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
           <Button className="w-full" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={loading}>
@@ -238,36 +270,54 @@ export default function CuerpoPage() {
         </CardContent>
       </Card>
 
-      {/* Resultado del análisis */}
+      {/* Resultado del análisis + post-comida check-in */}
       {analisis && (
-        <Card className="border-emerald-700/50 bg-slate-800/50">
-          <CardHeader>
-            <CardTitle>{(analisis.nombre_plato as string) || 'Análisis Nutricional'}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold">{analisis.calorias_est as number ?? '—'}</p>
-                <p className="text-xs text-slate-400">kcal</p>
+        <>
+          <Card className="border-emerald-700/50 bg-slate-800/50">
+            <CardHeader>
+              <CardTitle>{(analisis.nombre_plato as string) || 'Análisis Nutricional'}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold">{analisis.calorias_est as number ?? '—'}</p>
+                  <p className="text-xs text-slate-400">kcal</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold">{analisis.proteinas_g as number ?? '—'}g</p>
+                  <p className="text-xs text-slate-400">Proteínas</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold">{analisis.carbohidratos_g as number ?? '—'}g</p>
+                  <p className="text-xs text-slate-400">Carbohidratos</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold">{analisis.grasas_g as number ?? '—'}g</p>
+                  <p className="text-xs text-slate-400">Grasas</p>
+                </div>
               </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold">{analisis.proteinas_g as number ?? '—'}g</p>
-                <p className="text-xs text-slate-400">Proteínas</p>
+              <div className="prose prose-invert max-w-none text-slate-300 text-sm whitespace-pre-wrap">
+                {analisis.analisis_texto as string}
               </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold">{analisis.carbohidratos_g as number ?? '—'}g</p>
-                <p className="text-xs text-slate-400">Carbohidratos</p>
+            </CardContent>
+          </Card>
+          {/* Post-comida contextual check-in (§3.4.1) */}
+          <div className="rounded-lg border border-emerald-700/30 bg-emerald-900/10 px-4 py-3 space-y-2">
+            <p className="text-sm text-slate-300">🍽️ ¿Cómo te sientes <span className="font-medium text-emerald-300">después</span> de comer? <span className="text-slate-600 text-xs">· Diario Inteligente</span></p>
+            {!postComidaSaved ? (
+              <div className="flex gap-2">
+                {['😔', '😕', '😐', '🙂', '😊'].map((emoji, i) => (
+                  <button key={i} onClick={() => savePostComida(i * 2 + 2)}
+                    className="text-xl rounded-lg px-2 py-1 hover:bg-emerald-700/30 hover:scale-110 transition-all">
+                    {emoji}
+                  </button>
+                ))}
               </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold">{analisis.grasas_g as number ?? '—'}g</p>
-                <p className="text-xs text-slate-400">Grasas</p>
-              </div>
-            </div>
-            <div className="prose prose-invert max-w-none text-slate-300 text-sm whitespace-pre-wrap">
-              {analisis.analisis_texto as string}
-            </div>
-          </CardContent>
-        </Card>
+            ) : (
+              <p className="text-xs text-emerald-400">✓ Registro guardado en tu Diario</p>
+            )}
+          </div>
+        </>
       )}
 
       {/* Análisis de despensa — RF-006 */}
