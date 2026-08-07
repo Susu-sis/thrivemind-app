@@ -58,13 +58,19 @@ export default function CheckinPage() {
     setLoading(true);
     try {
       await api.post('/checkin/', form);
+    } catch {
+      toast.error('Error al guardar el check-in — revisa tu conexión');
+      setLoading(false);
+      return;
+    }
+    // Classify is best-effort: if it fails, check-in was already saved
+    try {
       const classify = await api.get('/insights/classify');
       setResult(classify.data);
-      toast.success('Check-in guardado correctamente');
     } catch {
-      toast.error('Error al guardar el check-in');
-      router.push('/dashboard');
+      // silent
     } finally {
+      toast.success('Check-in guardado correctamente');
       setLoading(false);
     }
   };

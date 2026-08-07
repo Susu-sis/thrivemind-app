@@ -136,6 +136,22 @@ export default function CuerpoPage() {
       <h1 className="text-2xl font-bold">💚 Pilar Cuerpo</h1>
       <p className="text-slate-400">Analiza un plato con IA o recibe recomendaciones nutricionales personalizadas.</p>
 
+      {/* Inputs biométricos — wearables (§3.3.2 Capa de Personalización Fase 2) */}
+      <div className="rounded-lg border border-dashed border-slate-600 bg-slate-800/20 px-4 py-3">
+        <div className="flex items-start gap-3">
+          <span className="text-xl mt-0.5">📡</span>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-medium text-slate-300">Inputs biométricos · Wearables</p>
+              <span className="text-[10px] bg-violet-800/40 border border-violet-600/40 text-violet-300 px-1.5 py-0.5 rounded">Fase 2</span>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              Garmin · Apple Watch · Oura · Strava — gasto calórico real, HRV y calidad de sueño para personalizar la recomendación nutricional. Disponible en la versión completa vía Terra API.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Circadian nutrition banner — Tabla 3.6 T7 window */}
       {circadianWindow && (
         <div className="flex flex-wrap items-center gap-3 rounded-lg border border-emerald-700/40 bg-emerald-900/20 px-4 py-2.5 text-sm">
@@ -168,7 +184,7 @@ export default function CuerpoPage() {
           <CardTitle>Recomendación Nutricional IA</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-400">Recibe un consejo nutricional personalizado basado en tu estado actual, sin necesidad de imagen.</p>
+          <p className="text-sm text-slate-400">Adapta el plan semanal a cómo te sientes hoy — el motor IA cruza tu último check-in (energía, sueño, estado emocional) con la base T3 de precursores para sugerirte qué priorizar ahora mismo.</p>
           <div className="flex gap-2">
             {FITNESS_GOALS.map((g) => (
               <button

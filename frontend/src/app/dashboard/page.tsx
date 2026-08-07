@@ -63,8 +63,8 @@ export default function DashboardPage() {
   const totalCheckins = data.estadisticas.total_checkins ?? 0;
   const modoActivo = totalCheckins >= 30 ? 'L2' : 'L1';
   const modoBadge = modoActivo === 'L2'
-    ? { label: `Modo L2 · XGBoost activo`, hint: 'Conecta wearable para Modo L3', color: 'text-green-400', dot: '🟢' }
-    : { label: `Modo L1 · Cold-start`, hint: `XGBoost activo en ${30 - totalCheckins} check-in${30 - totalCheckins !== 1 ? 's' : ''} más`, color: 'text-blue-400', dot: '🔵' };
+    ? { label: 'IA activa · Modo adaptativo', hint: 'Conecta wearable para datos biométricos en tiempo real', color: 'text-green-400', dot: '🟢' }
+    : { label: `Perfil en aprendizaje · ${totalCheckins}/30`, hint: `${30 - totalCheckins} check-in${30 - totalCheckins !== 1 ? 's' : ''} más para activar el motor IA`, color: 'text-blue-400', dot: '🔵' };
 
   return (
     <div className="space-y-6">

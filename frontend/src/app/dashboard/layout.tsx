@@ -16,8 +16,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: null,
     items: [
-      { href: '/dashboard',         label: 'Dashboard', emoji: '📊' },
-      { href: '/dashboard/checkin', label: 'Check-in',  emoji: '✍️' },
+      { href: '/dashboard', label: 'Dashboard', emoji: '📊' },
     ],
   },
   {
@@ -29,7 +28,10 @@ const NAV_GROUPS: NavGroup[] = [
       },
       {
         href: '/dashboard/cuerpo', label: 'Cuerpo',  emoji: '💚', pilar: 'cuerpo',
-        sub: [{ href: '/dashboard/meal-planner',  label: 'Plan Comidas',  emoji: '🍽️' }],
+        sub: [
+          { href: '/dashboard/checkin',      label: 'Check-in diario', emoji: '✍️' },
+          { href: '/dashboard/meal-planner', label: 'Plan Comidas',    emoji: '🍽️' },
+        ],
       },
       { href: '/dashboard/entorno', label: 'Entorno', emoji: '🌱', pilar: 'entorno' },
     ],

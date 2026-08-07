@@ -270,21 +270,34 @@ export default function MentePage() {
       <h1 className="text-2xl font-bold">🧠 Pilar Mente</h1>
       <p className="text-slate-400">Genera una sesión de meditación personalizada basada en tu estado actual.</p>
 
-      {/* Contextual banner: weather + time-of-day suggestion (Tabla 3.4 + WEATHER_MOOD_BASELINE) */}
+      {/* Contextual banner: clima + franja + sugerencia + perfil HUE ambiental (Tabla 3.3 + Tabla 3.4) */}
       {sugerencia && (
-        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-blue-700/40 bg-blue-900/20 px-4 py-2.5 text-sm">
-          {clima && (
-            <>
-              <span className="text-slate-300 font-medium">
-                {CLIMA_EMOJI[clima.clasificacion] ?? '🌡️'} {Math.round(clima.temperatura)}°C
+        <div className="rounded-lg border border-blue-700/40 bg-blue-900/20 px-4 py-3 text-sm space-y-2">
+          <div className="flex flex-wrap items-center gap-3">
+            {clima && (
+              <>
+                <span className="text-slate-300 font-medium">
+                  {CLIMA_EMOJI[clima.clasificacion] ?? '🌡️'} {Math.round(clima.temperatura)}°C
+                </span>
+                <span className="text-slate-600">·</span>
+              </>
+            )}
+            <span className="text-blue-300 font-medium">{sugerencia.franja}</span>
+            <span className="text-slate-500">·</span>
+            <span className="text-slate-400">ThriveMind sugiere:</span>
+            <span className="text-blue-300 font-semibold">{sugerencia.etiqueta}</span>
+          </div>
+          {HUE_POR_OBJETIVO[sugerencia.objetivo] && (
+            <div className="flex items-center gap-2 pt-1 border-t border-blue-800/40">
+              <span className="text-amber-400">💡</span>
+              <span className="text-xs text-amber-300">
+                Luz · {HUE_POR_OBJETIVO[sugerencia.objetivo].perfil} · {HUE_POR_OBJETIVO[sugerencia.objetivo].kelvin}K · {HUE_POR_OBJETIVO[sugerencia.objetivo].brillo}% intensidad
               </span>
-              <span className="text-slate-600">·</span>
-            </>
+              <a href="/dashboard/perfiles-hue" className="ml-auto text-xs text-amber-400/70 hover:text-amber-300 hover:underline whitespace-nowrap">
+                Abrir HUE →
+              </a>
+            </div>
           )}
-          <span className="text-blue-300 font-medium">{sugerencia.franja}</span>
-          <span className="text-slate-500">·</span>
-          <span className="text-slate-400">ThriveMind sugiere:</span>
-          <span className="text-blue-300 font-semibold">{sugerencia.etiqueta}</span>
         </div>
       )}
 
@@ -372,6 +385,22 @@ export default function MentePage() {
       )}
 
       <BreathingExercise suggestedTechnique={meditacion ? mapTecnicaToKey(meditacion.tecnica) : null} />
+
+      {/* Modulación de Música Sonora — Endel API (§3.3.1 Fase 2) */}
+      <div className="rounded-lg border border-dashed border-slate-600 bg-slate-800/20 px-4 py-4">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl mt-0.5">🎵</span>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-medium text-slate-300">Modulación de Música Sonora</p>
+              <span className="text-[10px] bg-violet-800/40 border border-violet-600/40 text-violet-300 px-1.5 py-0.5 rounded">Fase 2</span>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              Endel API · Flujo sonoro generado en tiempo real, sincronizado con HRV, hora del día y clima. Induce ondas alpha para relajación o theta para meditación profunda según el objetivo de la sesión.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
