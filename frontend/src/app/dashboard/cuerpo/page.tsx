@@ -145,9 +145,6 @@ export default function CuerpoPage() {
               <p className="text-sm font-medium text-slate-300">Inputs biométricos · Wearables</p>
               <span className="text-[10px] bg-violet-800/40 border border-violet-600/40 text-violet-300 px-1.5 py-0.5 rounded">Fase 2</span>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
-              Garmin · Apple Watch · Oura · Strava — gasto calórico real, HRV y calidad de sueño para personalizar la recomendación nutricional. Disponible en la versión completa vía Terra API.
-            </p>
           </div>
         </div>
       </div>
@@ -184,7 +181,8 @@ export default function CuerpoPage() {
           <CardTitle>Recomendación Nutricional IA</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-400">Adapta el plan semanal a cómo te sientes hoy — el motor IA cruza tu último check-in (energía, sueño, estado emocional) con la base T3 de precursores para sugerirte qué priorizar ahora mismo.</p>
+          <p className="text-sm text-slate-400">¿El plato de hoy no encaja con cómo te sientes? Ajústalo en base a tu estado actual.</p>
+          <a href="/dashboard/recomendaciones" className="inline-block text-xs text-emerald-400 hover:text-emerald-300 underline-offset-2 hover:underline">Ver acciones personalizadas para hoy →</a>
           <div className="flex gap-2">
             {FITNESS_GOALS.map((g) => (
               <button
