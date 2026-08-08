@@ -16,7 +16,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: null,
     items: [
-      { href: '/dashboard', label: 'Dashboard', emoji: '📊' },
+      { href: '/dashboard/checkin', label: 'Check-in Diario', emoji: '✍️' },
     ],
   },
   {
@@ -29,8 +29,7 @@ const NAV_GROUPS: NavGroup[] = [
       {
         href: '/dashboard/cuerpo', label: 'Cuerpo',  emoji: '💚', pilar: 'cuerpo',
         sub: [
-          { href: '/dashboard/checkin',      label: 'Check-in diario', emoji: '✍️' },
-          { href: '/dashboard/meal-planner', label: 'Plan Comidas',    emoji: '🍽️' },
+          { href: '/dashboard/meal-planner', label: 'Plan Comidas', emoji: '🍽️' },
         ],
       },
       { href: '/dashboard/entorno', label: 'Entorno', emoji: '🌱', pilar: 'entorno' },
@@ -39,12 +38,13 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Herramientas',
     items: [
-      { href: '/dashboard/insights',      label: 'Recomendaciones', emoji: '💡' },
-      { href: '/dashboard/convergencia',  label: 'Convergencia',    emoji: '📈' },
       { href: '/dashboard/correlaciones', label: 'Correlaciones ⭐', emoji: '🔗' },
-      { href: '/dashboard/historial',     label: 'Historial',       emoji: '📜' },
+      { href: '/dashboard',               label: 'Dashboard',         emoji: '📊' },
+      { href: '/dashboard/insights',      label: 'Recomendaciones',   emoji: '💡' },
+      { href: '/dashboard/convergencia',  label: 'Convergencia',      emoji: '📈' },
+      { href: '/dashboard/historial',     label: 'Historial',         emoji: '📜' },
       { href: '/dashboard/sentimiento',   label: 'Diario Inteligente', emoji: '📔' },
-      { href: '/dashboard/gamificacion',  label: 'Gamificación',    emoji: '🏆' },
+      { href: '/dashboard/gamificacion',  label: 'Gamificación',      emoji: '🏆' },
     ],
   },
 ];
