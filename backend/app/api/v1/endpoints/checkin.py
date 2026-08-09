@@ -6,8 +6,32 @@ from app.core.database import get_supabase
 from app.models.checkin import CheckinCreate
 from app.services.checkin_service import guardar_checkin
 from app.services.correlation_service import calcular_correlaciones_usuario, calcular_correlaciones_con_lag
+from app.services.emotional_classifier import classify_emotional_state
 
 router = APIRouter()
+
+_INTERVENTIONS = {
+    "estres_agudo": {
+        "respiracion": "Respiración 4-7-8 × 4 ciclos",
+        "luz": {"perfil": "Relajación Profunda", "kelvin": 2200, "brillo": 40},
+    },
+    "fatiga_cronica": {
+        "respiracion": "Respiración coherente 5 min",
+        "luz": {"perfil": "Amanecer Dorado", "kelvin": 3000, "brillo": 50},
+    },
+    "recuperacion_activa": {
+        "respiracion": "Respiración abdominal profunda 5 min",
+        "luz": {"perfil": "Balance Diurno", "kelvin": 4000, "brillo": 60},
+    },
+    "activacion": {
+        "respiracion": None,
+        "luz": {"perfil": "Productividad", "kelvin": 5000, "brillo": 80},
+    },
+    "equilibrio": {
+        "respiracion": None,
+        "luz": {"perfil": "Balance Diurno", "kelvin": 4000, "brillo": 70},
+    },
+}
 
 
 @router.post("/", response_model=dict, summary="Crear check-in diario")
@@ -18,9 +42,22 @@ async def crear_checkin(
     datos = checkin_data.model_dump()
     datos["user_id"] = current_user["id"]
     resultado = guardar_checkin(datos)
-    if resultado:
-        return {"success": True, "checkin": resultado}
-    return {"success": False, "error": "Error al guardar el check-in"}
+    if not resultado:
+        return {"success": False, "error": "Error al guardar el check-in"}
+
+    clasificacion = classify_emotional_state(datos)
+    estado = clasificacion["state"]
+    return {
+        "success": True,
+        "checkin": resultado,
+        "clasificacion": {
+            "estado": clasificacion["description"]["label"],
+            "confianza": clasificacion["confidence"],
+            "metodo": clasificacion["method"],
+            "descripcion": clasificacion["description"]["descripcion"],
+            "intervencion": _INTERVENTIONS.get(estado, {}),
+        },
+    }
 
 
 @router.get("/dashboard/tendencias", response_model=dict)
