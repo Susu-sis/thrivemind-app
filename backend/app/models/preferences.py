@@ -32,6 +32,14 @@ class UserPreferencesUpdate(BaseModel):
     objetivo_fitness: Optional[Literal[
         'mantener', 'perder_peso', 'ganar_musculo', 'tonificar', 'resistencia'
     ]] = None
+    # Perfil biométrico básico — Nivel 1 TMB (Mifflin-St Jeor)
+    peso_kg: Optional[float] = Field(default=None, ge=30, le=300)
+    altura_cm: Optional[int] = Field(default=None, ge=100, le=250)
+    edad: Optional[int] = Field(default=None, ge=10, le=120)
+    sexo_biologico: Optional[Literal['hombre', 'mujer']] = None
+    nivel_actividad: Optional[Literal[
+        'sedentario', 'moderado', 'activo', 'muy_activo'
+    ]] = None
 
 
 class UserPreferencesResponse(BaseModel):
@@ -49,6 +57,27 @@ class UserPreferencesResponse(BaseModel):
     preferencia_dieta: str = "sin_restriccion"
     presupuesto_semanal: str = "medio"
     objetivo_fitness: str = "mantener"
+    # Perfil biométrico básico
+    peso_kg: Optional[float] = None
+    altura_cm: Optional[int] = None
+    edad: Optional[int] = None
+    sexo_biologico: Optional[str] = None
+    nivel_actividad: Optional[str] = None
+
+    @property
+    def tdee(self) -> Optional[int]:
+        """TDEE = TMB Mifflin-St Jeor × factor actividad ± ajuste objetivo."""
+        if not all([self.peso_kg, self.altura_cm, self.edad, self.sexo_biologico]):
+            return None
+        if self.sexo_biologico == 'hombre':
+            tmb = 10 * self.peso_kg + 6.25 * self.altura_cm - 5 * self.edad + 5
+        else:
+            tmb = 10 * self.peso_kg + 6.25 * self.altura_cm - 5 * self.edad - 161
+        factores = {'sedentario': 1.2, 'moderado': 1.375, 'activo': 1.55, 'muy_activo': 1.725}
+        factor = factores.get(self.nivel_actividad or 'moderado', 1.375)
+        ajustes = {'mantener': 0, 'perder_peso': -500, 'ganar_musculo': 300, 'tonificar': 200, 'resistencia': 400}
+        ajuste = ajustes.get(self.objetivo_fitness, 0)
+        return round(tmb * factor + ajuste)
 
     @property
     def pilares_activos(self) -> list[str]:

@@ -18,6 +18,13 @@ interface Preferences {
   alergias: string[];
   preferencia_dieta: string;
   presupuesto_semanal: string;
+  objetivo_fitness: string;
+  // Perfil biométrico básico (Nivel 1 TMB)
+  peso_kg?: number;
+  altura_cm?: number;
+  edad?: number;
+  sexo_biologico?: string;
+  nivel_actividad?: string;
 }
 
 const OBJETIVOS = [
@@ -58,6 +65,33 @@ const PRESUPUESTOS = [
   { value: 'alto',  label: '> 120 €' },
 ];
 
+const ACTIVIDAD = [
+  { value: 'sedentario', label: '🧘 Sedentario', factor: 1.2 },
+  { value: 'moderado',   label: '🚶 Moderado',   factor: 1.375 },
+  { value: 'activo',     label: '🏃 Activo',     factor: 1.55 },
+  { value: 'muy_activo', label: '🏋️ Muy activo', factor: 1.725 },
+];
+
+const OBJETIVO_FITNESS = [
+  { value: 'perder_peso',   label: '📉 Perder peso',   ajuste: -500 },
+  { value: 'mantener',      label: '⚖️ Mantener',       ajuste: 0 },
+  { value: 'tonificar',     label: '💪 Tonificar',      ajuste: 200 },
+  { value: 'ganar_musculo', label: '🏋️ Ganar músculo', ajuste: 300 },
+];
+
+/** Mifflin-St Jeor × factor actividad ± ajuste objetivo — puramente client-side */
+function calcTDEE(p: Preferences): number | null {
+  if (!p.peso_kg || !p.altura_cm || !p.edad || !p.sexo_biologico) return null;
+  const tmb = p.sexo_biologico === 'hombre'
+    ? 10 * p.peso_kg + 6.25 * p.altura_cm - 5 * p.edad + 5
+    : 10 * p.peso_kg + 6.25 * p.altura_cm - 5 * p.edad - 161;
+  const factores: Record<string, number> = { sedentario: 1.2, moderado: 1.375, activo: 1.55, muy_activo: 1.725 };
+  const factor = factores[p.nivel_actividad ?? 'moderado'] ?? 1.375;
+  const ajustes: Record<string, number> = { perder_peso: -500, mantener: 0, tonificar: 200, ganar_musculo: 300 };
+  const ajuste = ajustes[p.objetivo_fitness ?? 'mantener'] ?? 0;
+  return Math.round(tmb * factor + ajuste);
+}
+
 export default function ConfiguracionPage() {
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [saving, setSaving] = useState(false);
@@ -82,6 +116,12 @@ export default function ConfiguracionPage() {
         alergias: prefs.alergias,
         preferencia_dieta: prefs.preferencia_dieta,
         presupuesto_semanal: prefs.presupuesto_semanal,
+        objetivo_fitness: prefs.objetivo_fitness,
+        peso_kg: prefs.peso_kg ?? null,
+        altura_cm: prefs.altura_cm ?? null,
+        edad: prefs.edad ?? null,
+        sexo_biologico: prefs.sexo_biologico ?? null,
+        nivel_actividad: prefs.nivel_actividad ?? null,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -311,6 +351,106 @@ export default function ConfiguracionPage() {
               ))}
             </div>
           </div>
+
+        </CardContent>
+      </Card>
+
+      {/* Perfil Biométrico Básico */}
+      <Card className="border-slate-700 bg-slate-800/50">
+        <CardHeader>
+          <CardTitle>Perfil Biométrico · Nivel 1</CardTitle>
+          <p className="text-xs text-slate-400 mt-1">
+            Calcula tu objetivo calórico personalizado mediante la fórmula Mifflin-St Jeor.
+            Datos usados exclusivamente para este cálculo.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-5">
+
+          {/* Sexo biológico */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-slate-300">Sexo biológico <span className="text-xs text-slate-500">(para cálculo metabólico)</span></p>
+            <div className="flex gap-2">
+              {(['hombre', 'mujer'] as const).map((s) => (
+                <button key={s}
+                  onClick={() => setPrefs({ ...prefs, sexo_biologico: s })}
+                  className={`flex-1 rounded-lg px-3 py-2 text-sm capitalize transition-colors ${
+                    prefs.sexo_biologico === s
+                      ? 'bg-violet-600/30 border border-violet-500 text-violet-200'
+                      : 'bg-slate-700/50 border border-slate-600 text-slate-300 hover:bg-slate-700'
+                  }`}>
+                  {s === 'hombre' ? '♂️ Hombre' : '♀️ Mujer'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Peso / Altura / Edad */}
+          <div className="grid grid-cols-3 gap-3">
+            {([
+              { key: 'peso_kg',   label: 'Peso (kg)',  min: 30,  max: 300, step: 0.5, placeholder: '70' },
+              { key: 'altura_cm', label: 'Altura (cm)', min: 100, max: 250, step: 1,   placeholder: '170' },
+              { key: 'edad',      label: 'Edad',        min: 10,  max: 120, step: 1,   placeholder: '30' },
+            ] as const).map(({ key, label, min, max, step, placeholder }) => (
+              <div key={key} className="space-y-1">
+                <p className="text-xs font-medium text-slate-400">{label}</p>
+                <input
+                  type="number" min={min} max={max} step={step}
+                  placeholder={placeholder}
+                  value={prefs[key] ?? ''}
+                  onChange={(e) => setPrefs({ ...prefs, [key]: e.target.value ? Number(e.target.value) : undefined })}
+                  className="w-full rounded-lg px-3 py-2 text-sm bg-slate-700 border border-slate-600 text-slate-200 outline-none focus:border-violet-500 [appearance:textfield]"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Nivel de actividad */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-slate-300">Nivel de actividad física</p>
+            <div className="grid grid-cols-2 gap-2">
+              {ACTIVIDAD.map((a) => (
+                <button key={a.value}
+                  onClick={() => setPrefs({ ...prefs, nivel_actividad: a.value })}
+                  className={`rounded-lg px-3 py-2 text-sm text-left transition-colors ${
+                    prefs.nivel_actividad === a.value
+                      ? 'bg-violet-600/30 border border-violet-500 text-violet-200'
+                      : 'bg-slate-700/50 border border-slate-600 text-slate-300 hover:bg-slate-700'
+                  }`}>
+                  {a.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Objetivo fitness */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-slate-300">Objetivo fitness</p>
+            <div className="grid grid-cols-2 gap-2">
+              {OBJETIVO_FITNESS.map((o) => (
+                <button key={o.value}
+                  onClick={() => setPrefs({ ...prefs, objetivo_fitness: o.value })}
+                  className={`rounded-lg px-3 py-2 text-sm text-left transition-colors ${
+                    prefs.objetivo_fitness === o.value
+                      ? 'bg-emerald-600/30 border border-emerald-500 text-emerald-200'
+                      : 'bg-slate-700/50 border border-slate-600 text-slate-300 hover:bg-slate-700'
+                  }`}>
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* TDEE resultado */}
+          {calcTDEE(prefs) !== null && (
+            <div className="rounded-lg bg-emerald-900/30 border border-emerald-700/50 p-4">
+              <p className="text-xs text-emerald-400 mb-1">Objetivo calórico personalizado (Nivel 1 · TMB Mifflin-St Jeor)</p>
+              <p className="text-2xl font-bold text-emerald-300">{calcTDEE(prefs)?.toLocaleString()} kcal<span className="text-sm font-normal text-emerald-400">/día</span></p>
+              <p className="text-xs text-slate-400 mt-1">
+                En Fase 2, este valor se ajusta en tiempo real con gasto calórico real desde wearables (Terra API).
+                El peso se sincroniza automáticamente desde básculas inteligentes compatibles (Terra API · Fase 2).
+              </p>
+            </div>
+          )}
 
         </CardContent>
       </Card>

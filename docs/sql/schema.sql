@@ -57,6 +57,23 @@ CREATE TABLE IF NOT EXISTS user_preferences (
     entorno_intensidad INTEGER DEFAULT 1 NOT NULL CHECK (entorno_intensidad BETWEEN 1 AND 3),
     objetivo_principal TEXT DEFAULT 'equilibrio' NOT NULL,
     frecuencia_checkin TEXT DEFAULT 'diario' NOT NULL,
+    -- Perfil nutricional (RF-010)
+    alergias           TEXT[] DEFAULT '{}',
+    preferencia_dieta  TEXT DEFAULT 'sin_restriccion',
+    presupuesto_semanal TEXT DEFAULT 'medio',
+    objetivo_fitness   TEXT DEFAULT 'mantener',
+    -- Perfil biométrico básico — Nivel 1 TMB (Mifflin-St Jeor)
+    -- Migración para DBs existentes:
+    --   ALTER TABLE user_preferences ADD COLUMN IF NOT EXISTS peso_kg DECIMAL(5,1);
+    --   ALTER TABLE user_preferences ADD COLUMN IF NOT EXISTS altura_cm INTEGER;
+    --   ALTER TABLE user_preferences ADD COLUMN IF NOT EXISTS edad INTEGER;
+    --   ALTER TABLE user_preferences ADD COLUMN IF NOT EXISTS sexo_biologico TEXT CHECK (sexo_biologico IN ('hombre','mujer'));
+    --   ALTER TABLE user_preferences ADD COLUMN IF NOT EXISTS nivel_actividad TEXT DEFAULT 'moderado';
+    peso_kg            DECIMAL(5,1),
+    altura_cm          INTEGER,
+    edad               INTEGER,
+    sexo_biologico     TEXT CHECK (sexo_biologico IN ('hombre', 'mujer')),
+    nivel_actividad    TEXT DEFAULT 'moderado' CHECK (nivel_actividad IN ('sedentario', 'moderado', 'activo', 'muy_activo')),
     created_at        TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     updated_at        TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );

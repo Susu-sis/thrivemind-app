@@ -64,6 +64,10 @@ async def update_user_preferences(
         update_data["presupuesto_semanal"] = updates.presupuesto_semanal
     if updates.objetivo_fitness is not None:
         update_data["objetivo_fitness"] = updates.objetivo_fitness
+    for field in ('peso_kg', 'altura_cm', 'edad', 'sexo_biologico', 'nivel_actividad'):
+        val = getattr(updates, field, None)
+        if val is not None:
+            update_data[field] = val
 
     if not update_data:
         return await get_user_preferences(user_id, supabase)
