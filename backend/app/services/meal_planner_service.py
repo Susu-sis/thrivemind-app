@@ -69,12 +69,91 @@ def _scale_plan_to_target(plan: dict, target_kcal: int) -> dict:
     return scaled
 
 
+# Keywords that signal a food is rich in key neuronutrients (used for nota_hoy matching)
+_NUTRIENT_SIGNALS = {
+    "serotonina": ["salmón", "pavo", "avena", "espinaca", "huevo", "yogur", "plátano", "miso", "edamame", "sopa"],
+    "dopamina":   ["pollo", "lentejas", "quinoa", "tofu", "arroz", "pizza", "asado"],
+    "energia":    ["pasta", "arroz", "quinoa", "patatas", "paella", "pan", "pancake"],
+}
+
+_STATE_RULES = [
+    # (condición, nutriente_objetivo, mensaje_accion)
+    (lambda e, em: e <= 4 or em in ["estres", "ansiedad", "tristeza"],
+     "serotonina", "Dado tu estrés actual, prioriza este plato — es rico en triptófano, precursor directo de serotonina. Añade una pequeña porción de nueces o chocolate 85% como postre."),
+    (lambda e, em: e <= 4 or em in ["cansancio", "fatiga", "agotamiento"],
+     "dopamina", "Tu energía está baja. Este plato aporta tirosina para recuperar dopamina. Asegúrate de comer completo y añade un café o té verde si lo necesitas."),
+    (lambda e, em: e >= 7,
+     "energia", "Tu estado es óptimo. Aprovecha para comer bien y mantener el rendimiento — este plato tiene los carbohidratos complejos que necesitas."),
+]
+
+
+def _generate_state_note(plan: dict, last_checkin: dict | None) -> dict | None:
+    """Cross today's plan meals with last check-in state to produce a personalised nota_hoy."""
+    if not last_checkin:
+        return None
+    estado = last_checkin.get("estado_emocional", 5)
+    energia = last_checkin.get("energia_fisica", 5)
+    emocion = (last_checkin.get("emocion_principal") or "neutral").lower()
+
+    # Pick the first matching rule
+    objetivo_nutriente = None
+    mensaje = None
+    for condicion, nutriente, msg in _STATE_RULES:
+        if condicion(estado if estado is not None else 5, emocion):
+            objetivo_nutriente = nutriente
+            mensaje = msg
+            break
+
+    if not objetivo_nutriente:
+        return None
+
+    # Find today's best matching meal from the plan
+    hoy_nombre = datetime.now(timezone.utc).strftime("%A")
+    dias_es = {"Monday": "Lunes", "Tuesday": "Martes", "Wednesday": "Miércoles",
+               "Thursday": "Jueves", "Friday": "Viernes", "Saturday": "Sábado", "Sunday": "Domingo"}
+    hoy_es = dias_es.get(hoy_nombre, "Lunes")
+    hoy_meals = plan.get(hoy_es, {})
+
+    keywords = _NUTRIENT_SIGNALS.get(objetivo_nutriente, [])
+    plato_destacado = None
+    slot_destacado = None
+    for slot in ["cena", "almuerzo", "desayuno"]:
+        meal = hoy_meals.get(slot)
+        if not meal:
+            continue
+        nombre_lower = meal["nombre"].lower()
+        if any(kw in nombre_lower for kw in keywords):
+            plato_destacado = meal["nombre"]
+            slot_destacado = slot
+            break
+
+    # Fallback: just use cena
+    if not plato_destacado and "cena" in hoy_meals:
+        plato_destacado = hoy_meals["cena"]["nombre"]
+        slot_destacado = "cena"
+
+    if not plato_destacado:
+        return None
+
+    slots_es = {"desayuno": "desayuno", "almuerzo": "almuerzo", "cena": "cena"}
+    return {
+        "dia": hoy_es,
+        "slot": slots_es.get(slot_destacado, slot_destacado),
+        "plato": plato_destacado,
+        "estado_emocional": estado,
+        "emocion": emocion,
+        "nutriente_objetivo": objetivo_nutriente,
+        "mensaje": mensaje,
+    }
+
+
 async def generate_weekly_plan(
     user_id: str,
     objetivo: str = "equilibrio",
     alergias: list[str] | None = None,
     supabase=None,
     target_kcal: int | None = None,
+    last_checkin: dict | None = None,
 ) -> dict:
     """Generate a weekly meal plan. Demo returns hardcoded, prod could use OpenAI."""
     if settings.environment == "demo":
@@ -85,6 +164,7 @@ async def generate_weekly_plan(
             "shopping_list": _DEMO_SHOPPING,
             "objetivo": objetivo,
             "calorias_diarias_promedio": actual_avg,
+            "nota_hoy": _generate_state_note(plan, last_checkin),
             "semana_inicio": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
             "semana_fin": (datetime.now(timezone.utc) + timedelta(days=6)).strftime("%Y-%m-%d"),
         }
@@ -118,6 +198,7 @@ Solo devuelve el JSON, sin texto adicional."""
             "shopping_list": _DEMO_SHOPPING,
             "objetivo": objetivo,
             "calorias_diarias_promedio": cal_avg,
+            "nota_hoy": _generate_state_note(plan, last_checkin),
             "semana_inicio": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
             "semana_fin": (datetime.now(timezone.utc) + timedelta(days=6)).strftime("%Y-%m-%d"),
             "generado_por": "gpt-4o",
@@ -135,6 +216,7 @@ Solo devuelve el JSON, sin texto adicional."""
         "shopping_list": _DEMO_SHOPPING,
         "objetivo": objetivo,
         "calorias_diarias_promedio": fallback_avg,
+        "nota_hoy": _generate_state_note(fallback_plan, last_checkin),
         "semana_inicio": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         "semana_fin": (datetime.now(timezone.utc) + timedelta(days=6)).strftime("%Y-%m-%d"),
     }

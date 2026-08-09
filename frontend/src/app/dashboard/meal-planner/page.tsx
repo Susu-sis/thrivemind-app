@@ -10,10 +10,21 @@ interface Meal {
   calorias: number;
 }
 
+interface NotaHoy {
+  dia: string;
+  slot: string;
+  plato: string;
+  estado_emocional: number;
+  emocion: string;
+  nutriente_objetivo: string;
+  mensaje: string;
+}
+
 interface MealPlanData {
   plan: Record<string, { desayuno: Meal; almuerzo: Meal; cena: Meal }>;
   shopping_list: Record<string, string[]>;
   calorias_diarias_promedio: number;
+  nota_hoy?: NotaHoy;
 }
 
 const MEAL_EMOJIS: Record<string, string> = {
@@ -67,6 +78,20 @@ export default function MealPlannerPage() {
           </button>
         </div>
       </div>
+
+      {/* nota_hoy: state-aware bridge between check-in and today's meal */}
+      {data.nota_hoy && (
+        <div className="rounded-lg border border-violet-600/40 bg-violet-900/20 px-4 py-3 space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-violet-300">🧠 Nota para hoy · {data.nota_hoy.dia} {data.nota_hoy.slot}</span>
+            <span className="text-[10px] bg-violet-800/40 border border-violet-600/40 text-violet-400 px-1.5 py-0.5 rounded capitalize">{data.nota_hoy.nutriente_objetivo}</span>
+          </div>
+          <p className="text-sm text-slate-300">
+            <span className="text-violet-200 font-medium">{data.nota_hoy.plato}</span>
+            {' '}— {data.nota_hoy.mensaje}
+          </p>
+        </div>
+      )}
 
       {showShopping ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
