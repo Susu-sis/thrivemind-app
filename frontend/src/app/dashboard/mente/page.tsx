@@ -199,6 +199,13 @@ function mapTecnicaToKey(tecnica: string): TechniqueKey | null {
 }
 // ── Main page ────────────────────────────────────────────────────────────────
 
+interface LastCheckin {
+  estado_emocional: number;
+  energia_fisica: number;
+  horas_sueno: number;
+  emocion_principal: string;
+}
+
 export default function MentePage() {
   const [sugerencia, setSugerencia] = useState<ReturnType<typeof getSugerenciaContextual> | null>(null);
   const [intencion, setIntencion] = useState('');
@@ -206,6 +213,7 @@ export default function MentePage() {
   const [loading, setLoading] = useState(false);
   const [meditacion, setMeditacion] = useState<{ guion: string; tecnica: string } | null>(null);
   const [clima, setClima] = useState<{ temperatura: number; clasificacion: string } | null>(null);
+  const [lastCheckin, setLastCheckin] = useState<LastCheckin | null>(null);
   const [feedbackScore, setFeedbackScore] = useState<number | null>(null);
   const [feedbackSaved, setFeedbackSaved] = useState(false);
   const [preMedScore, setPreMedScore] = useState<number | null>(null);
@@ -216,6 +224,12 @@ export default function MentePage() {
     setSugerencia(s);
     setObjetivo(s.objetivo);
     api.get('/entorno/clima').then((res) => setClima(res.data)).catch(() => {});
+    api.get('/checkin/dashboard/tendencias?dias=7')
+      .then((res) => {
+        const serie = res.data?.serie_temporal;
+        if (serie && serie.length > 0) setLastCheckin(serie[serie.length - 1]);
+      })
+      .catch(() => {});
   }, []);
 
   const objetivos = [
@@ -243,6 +257,15 @@ export default function MentePage() {
       setMeditacion(res.data);
       setFeedbackScore(null);
       setFeedbackSaved(false);
+      // Persist HUE suggestion so perfiles-hue page stays in sync
+      const hueForObjetivo = HUE_POR_OBJETIVO[objetivo];
+      if (hueForObjetivo) {
+        localStorage.setItem('hue_meditation_suggestion', JSON.stringify({
+          ...hueForObjetivo,
+          objetivo,
+          timestamp: Date.now(),
+        }));
+      }
       // Award gamification points (fire-and-forget)
       api.post('/gamification/award?action=meditacion_completada').catch(() => {});
       toast.success('Meditación generada con éxito');
@@ -297,6 +320,22 @@ export default function MentePage() {
             <span className="text-slate-400">ThriveMind sugiere:</span>
             <span className="text-blue-300 font-semibold">{sugerencia.etiqueta}</span>
           </div>
+          {lastCheckin && (
+            <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-blue-800/40">
+              <span className="text-slate-500 text-xs">Estado check-in</span>
+              <span className="text-xs text-slate-300">🧠 {lastCheckin.estado_emocional}/10</span>
+              <span className="text-slate-600">·</span>
+              <span className="text-xs text-slate-300">⚡ {lastCheckin.energia_fisica}/10</span>
+              <span className="text-slate-600">·</span>
+              <span className="text-xs text-slate-300">😴 {lastCheckin.horas_sueno}h</span>
+              {lastCheckin.emocion_principal && lastCheckin.emocion_principal !== 'neutral' && (
+                <>
+                  <span className="text-slate-600">·</span>
+                  <span className="text-xs text-violet-300">{lastCheckin.emocion_principal}</span>
+                </>
+              )}
+            </div>
+          )}
           {HUE_POR_OBJETIVO[sugerencia.objetivo] && (
             <div className="flex items-center gap-2 pt-1 border-t border-blue-800/40">
               <span className="text-amber-400">💡</span>

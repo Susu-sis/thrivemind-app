@@ -45,12 +45,21 @@ interface HueProfile {
   is_custom: boolean;
 }
 
+interface MeditationHue {
+  perfil: string;
+  kelvin: number;
+  brillo: number;
+  objetivo: string;
+  timestamp: number;
+}
+
 export default function PerfilesHuePage() {
   const [profiles, setProfiles] = useState<HueProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: '', kelvin: 4000, brightness: 70, color_hex: '#ffd699', description: '' });
   const [recommendation, setRecommendation] = useState<HueRecommendation | null>(null);
+  const [meditationHue, setMeditationHue] = useState<MeditationHue | null>(null);
 
   const load = () => {
     api.get('/hue/profiles')
@@ -64,6 +73,19 @@ export default function PerfilesHuePage() {
 
   useEffect(() => {
     load();
+    // Read active meditation HUE suggestion (set by Mente page on generation)
+    try {
+      const stored = localStorage.getItem('hue_meditation_suggestion');
+      if (stored) {
+        const parsed: MeditationHue = JSON.parse(stored);
+        // Valid for 2 hours
+        if (Date.now() - parsed.timestamp < 2 * 60 * 60 * 1000) {
+          setMeditationHue(parsed);
+        } else {
+          localStorage.removeItem('hue_meditation_suggestion');
+        }
+      }
+    } catch { /* ignore */ }
     api.get('/checkin/dashboard/tendencias?dias=7')
       .then((res) => {
         const serie = res.data?.serie_temporal;
@@ -117,11 +139,31 @@ export default function PerfilesHuePage() {
         </button>
       </div>
 
+      {/* Active meditation HUE — overrides base recommendation when a session was just generated */}
+      {meditationHue && (
+        <div className="flex flex-wrap items-center gap-3 px-5 py-4 rounded-xl bg-violet-500/10 border border-violet-500/40">
+          <span className="text-xl">🧘</span>
+          <div className="flex-1 min-w-0">
+            <span className="text-violet-300 font-medium text-sm">Sesión de meditación activa</span>
+            <span className="text-slate-300 text-sm"> → objetivo: </span>
+            <span className="text-white font-semibold text-sm capitalize">{meditationHue.objetivo}</span>
+            <span className="text-slate-400 text-xs ml-2">{meditationHue.kelvin}K · {meditationHue.brillo}%</span>
+            <p className="text-xs text-violet-400 mt-0.5">Perfil: <strong className="text-white">{meditationHue.perfil}</strong></p>
+          </div>
+          <button
+            onClick={() => { localStorage.removeItem('hue_meditation_suggestion'); setMeditationHue(null); }}
+            className="text-xs text-slate-500 hover:text-slate-400"
+          >
+            Cerrar ×
+          </button>
+        </div>
+      )}
+
       {recommendation && (
         <div className="flex flex-wrap items-center gap-3 px-5 py-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
           <span className="text-xl">💡</span>
           <div className="flex-1 min-w-0">
-            <span className="text-amber-300 font-medium text-sm">Para tu estado actual</span>
+            <span className="text-amber-300 font-medium text-sm">{meditationHue ? 'Estado basal (check-in)' : 'Para tu estado actual'}</span>
             <span className="text-slate-300 text-sm"> → ThriveMind recomienda: </span>
             <span className="text-white font-semibold text-sm">{recommendation.name}</span>
             <span className="text-slate-400 text-xs ml-2">{recommendation.kelvin}K · {recommendation.brightness}%</span>
