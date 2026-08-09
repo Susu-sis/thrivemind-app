@@ -57,23 +57,18 @@ export default function CheckinPage() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await api.post('/checkin/', form);
+      const res = await api.post('/checkin/', form);
+      if (res.data?.clasificacion) {
+        setResult(res.data.clasificacion);
+      }
+      // Award gamification points (fire-and-forget)
+      api.post('/gamification/award?action=checkin_diario').catch(() => {});
+      toast.success('Check-in guardado correctamente');
     } catch {
       toast.error('Error al guardar el check-in — revisa tu conexión');
+    } finally {
       setLoading(false);
-      return;
     }
-    // Classify is best-effort: if it fails, check-in was already saved
-    try {
-      const classify = await api.get('/insights/classify');
-      setResult(classify.data);
-    } catch {
-      // silent
-    }
-    // Award gamification points (fire-and-forget)
-    api.post('/gamification/award?action=checkin_diario').catch(() => {});
-    toast.success('Check-in guardado correctamente');
-    setLoading(false);
   };
 
   return (

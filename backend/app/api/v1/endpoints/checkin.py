@@ -47,16 +47,11 @@ async def crear_checkin(
 
     clasificacion = classify_emotional_state(datos)
     estado = clasificacion["state"]
+    clasificacion["intervencion"] = _INTERVENTIONS.get(estado, {})
     return {
         "success": True,
         "checkin": resultado,
-        "clasificacion": {
-            "estado": clasificacion["description"]["label"],
-            "confianza": clasificacion["confidence"],
-            "metodo": clasificacion["method"],
-            "descripcion": clasificacion["description"]["descripcion"],
-            "intervencion": _INTERVENTIONS.get(estado, {}),
-        },
+        "clasificacion": clasificacion,
     }
 
 
