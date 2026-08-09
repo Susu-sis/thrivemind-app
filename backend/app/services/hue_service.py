@@ -77,6 +77,15 @@ MAPA_CONTEXTO_A_PERFIL = {
     "lluvia_introspeccion": "meditacion_calma",
     "calor_extremo": "meditacion_energia",
     "neutro": "meditacion_calma",
+     # Aliases del catálogo /hue/profiles
+    "relajacion_profunda": "meditacion_calma",
+    "trabajo_productivo": "meditacion_enfoque",
+    "lectura_nocturna": "descanso_nocturno",
+    "despertar_suave": "meditacion_energia",
+    "yoga_ambiente": "nutricion_comida",
+    "cena_social": "nutricion_comida",
+    "naturaleza_indoor": "farming_cuidado",
+    "noche_estrellada": "descanso_nocturno",
 }
 
 
