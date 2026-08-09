@@ -446,8 +446,7 @@ export default function ConfiguracionPage() {
               <p className="text-xs text-emerald-400 mb-1">Objetivo calórico personalizado (Nivel 1 · TMB Mifflin-St Jeor)</p>
               <p className="text-2xl font-bold text-emerald-300">{calcTDEE(prefs)?.toLocaleString()} kcal<span className="text-sm font-normal text-emerald-400">/día</span></p>
               <p className="text-xs text-slate-400 mt-1">
-                En Fase 2, este valor se ajusta en tiempo real con gasto calórico real desde wearables (Terra API).
-                El peso se sincroniza automáticamente desde básculas inteligentes compatibles (Terra API · Fase 2).
+                Fase 2: wearables + básculas inteligentes vía Terra API.
               </p>
             </div>
           )}
