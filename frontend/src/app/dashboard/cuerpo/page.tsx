@@ -77,6 +77,20 @@ export default function CuerpoPage() {
   const [preComidaScore, setPreComidaScore] = useState<number | null>(null);
   const [preComidaSaved, setPreComidaSaved] = useState(false);
   const [postComidaSaved, setPostComidaSaved] = useState(false);
+  // State-aware suggestion from holistic (overrides circadian example when available)
+  const [holisticEjemplo, setHolisticEjemplo] = useState<string | null>(null);
+  const [holisticRazon, setHolisticRazon] = useState<string | null>(null);
+
+  useEffect(() => {
+    api.get('/insights/holistic')
+      .then((res) => {
+        const ej = res.data?.pillar_cuerpo?.nutricion?.ejemplo_comida;
+        const rz = res.data?.pillar_cuerpo?.nutricion?.razon;
+        if (ej) setHolisticEjemplo(ej);
+        if (rz) setHolisticRazon(rz);
+      })
+      .catch(() => {});
+  }, []);
 
   const pedirRecomendacion = async () => {
     setRecLoading(true);
@@ -164,15 +178,28 @@ export default function CuerpoPage() {
         </div>
       </div>
 
-      {/* Circadian nutrition banner — Tabla 3.6 T7 window */}
+      {/* Circadian + state nutrition banner: state-aware if holistic available, else circadian fallback */}
       {circadianWindow && (
-        <div className="flex flex-wrap items-center gap-3 rounded-lg border border-emerald-700/40 bg-emerald-900/20 px-4 py-2.5 text-sm">
-          <span className="text-emerald-300 font-medium">{circadianWindow.emoji} {circadianWindow.label}</span>
-          <span className="text-slate-500">·</span>
-          <span className="text-slate-400">{circadianWindow.descripcion}</span>
-          <span className="text-slate-500">·</span>
-          <span className="text-slate-500 text-xs">Prueba:</span>
-          <span className="text-emerald-200 italic text-xs">{circadianWindow.ejemplo}</span>
+        <div className="rounded-lg border border-emerald-700/40 bg-emerald-900/20 px-4 py-3 text-sm space-y-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-emerald-300 font-medium">{circadianWindow.emoji} {circadianWindow.label}</span>
+            <span className="text-slate-500">·</span>
+            <span className="text-slate-400">{circadianWindow.descripcion}</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {holisticEjemplo ? (
+              <>
+                <span className="text-slate-500 text-xs">Estado actual →</span>
+                <span className="text-emerald-200 font-medium text-xs">{holisticEjemplo}</span>
+                {holisticRazon && <span className="text-slate-500 text-xs">· {holisticRazon}</span>}
+              </>
+            ) : (
+              <>
+                <span className="text-slate-500 text-xs">Sugerencia circadiana:</span>
+                <span className="text-emerald-200 italic text-xs">{circadianWindow.ejemplo}</span>
+              </>
+            )}
+          </div>
         </div>
       )}
 

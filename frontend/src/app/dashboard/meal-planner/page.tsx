@@ -49,7 +49,9 @@ export default function MealPlannerPage() {
         <div>
           <h1 className="text-2xl font-bold">🍽️ Plan Semanal de Comidas</h1>
           <p className="text-slate-400 mt-1">
-            Promedio diario: <span className="text-emerald-400 font-semibold">{data.calorias_diarias_promedio} kcal</span>
+            Objetivo calórico personalizado:{' '}
+            <span className="text-emerald-400 font-semibold">{data.calorias_diarias_promedio} kcal/día</span>
+            <span className="text-slate-600 text-xs ml-2">· Mifflin-St Jeor · Nivel 1</span>
           </p>
         </div>
         <div className="flex gap-2">
