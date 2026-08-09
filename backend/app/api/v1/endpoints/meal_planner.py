@@ -7,6 +7,7 @@ from typing import Optional
 from app.core.auth import get_current_user
 from app.core.database import get_supabase
 from app.services.meal_planner_service import generate_weekly_plan
+from app.services.preferences_service import get_user_preferences
 
 router = APIRouter()
 
@@ -17,8 +18,11 @@ async def get_weekly_plan(
     current_user=Depends(get_current_user),
     supabase=Depends(get_supabase),
 ):
+    prefs = await get_user_preferences(current_user["id"], supabase)
+    target_kcal = prefs.tdee  # None if biometric profile incomplete
     return await generate_weekly_plan(
         user_id=current_user["id"],
         objetivo=objetivo,
         supabase=supabase,
+        target_kcal=target_kcal,
     )

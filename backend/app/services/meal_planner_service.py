@@ -57,21 +57,34 @@ _DEMO_SHOPPING = {
 }
 
 
+def _scale_plan_to_target(plan: dict, target_kcal: int) -> dict:
+    """Scale each meal's calories so the daily average matches target_kcal."""
+    demo_avg = sum(sum(m["calorias"] for m in day.values()) for day in plan.values()) / len(plan)
+    if demo_avg == 0:
+        return plan
+    ratio = target_kcal / demo_avg
+    scaled = {}
+    for day, meals in plan.items():
+        scaled[day] = {slot: {**meal, "calorias": round(meal["calorias"] * ratio)} for slot, meal in meals.items()}
+    return scaled
+
+
 async def generate_weekly_plan(
     user_id: str,
     objetivo: str = "equilibrio",
     alergias: list[str] | None = None,
     supabase=None,
+    target_kcal: int | None = None,
 ) -> dict:
     """Generate a weekly meal plan. Demo returns hardcoded, prod could use OpenAI."""
     if settings.environment == "demo":
+        plan = _scale_plan_to_target(_DEMO_MEALS, target_kcal) if target_kcal else _DEMO_MEALS
+        actual_avg = round(sum(sum(m["calorias"] for m in day.values()) for day in plan.values()) / 7)
         return {
-            "plan": _DEMO_MEALS,
+            "plan": plan,
             "shopping_list": _DEMO_SHOPPING,
             "objetivo": objetivo,
-            "calorias_diarias_promedio": round(
-                sum(sum(m["calorias"] for m in day.values()) for day in _DEMO_MEALS.values()) / 7
-            ),
+            "calorias_diarias_promedio": actual_avg,
             "semana_inicio": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
             "semana_fin": (datetime.now(timezone.utc) + timedelta(days=6)).strftime("%Y-%m-%d"),
         }
@@ -99,6 +112,7 @@ Solo devuelve el JSON, sin texto adicional."""
             sum(m.get("calorias", 400) for m in day.values())
             for day in plan.values()
         ) / 7)
+        cal_avg = target_kcal if target_kcal else cal_avg
         return {
             "plan": plan,
             "shopping_list": _DEMO_SHOPPING,
@@ -112,11 +126,15 @@ Solo devuelve el JSON, sin texto adicional."""
         pass
 
     # Fallback to demo plan
+    fallback_plan = _scale_plan_to_target(_DEMO_MEALS, target_kcal) if target_kcal else _DEMO_MEALS
+    fallback_avg = target_kcal or round(
+        sum(sum(m["calorias"] for m in day.values()) for day in fallback_plan.values()) / 7
+    )
     return {
-        "plan": _DEMO_MEALS,
+        "plan": fallback_plan,
         "shopping_list": _DEMO_SHOPPING,
         "objetivo": objetivo,
-        "calorias_diarias_promedio": 1300,
+        "calorias_diarias_promedio": fallback_avg,
         "semana_inicio": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         "semana_fin": (datetime.now(timezone.utc) + timedelta(days=6)).strftime("%Y-%m-%d"),
     }
