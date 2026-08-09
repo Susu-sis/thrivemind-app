@@ -159,7 +159,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Radar Chart: Promedios por pilar — s\u00f3lo 3 pilares, sue\u00f1o es modulador no pilar aut\u00f3nomo */}
+        {/* Radar Chart: Promedios por pilar \u2014 s\u00f3lo 3 pilares, sue\u00f1o es modulador no pilar aut\u00f3nomo */}
         <Card className="border-slate-700 bg-slate-800/50">
           <CardHeader>
             <CardTitle className="text-lg">Balance de pilares</CardTitle>
@@ -167,7 +167,7 @@ export default function DashboardPage() {
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <RadarChart
-                data={data.promedios_pilares.filter((p) => p.pilar !== 'Sueño' && p.pilar !== 'sueno' && p.pilar !== 'horas_sueno')}
+                data={data.promedios_pilares.filter((p) => p.pilar !== 'Sue\u00f1o' && p.pilar !== 'sueno' && p.pilar !== 'horas_sueno')}
                 margin={{ top: 10, right: 30, bottom: 10, left: 30 }}
               >
                 <PolarGrid stroke="#334155" />
@@ -175,7 +175,16 @@ export default function DashboardPage() {
                   dataKey="pilar"
                   stroke="#94a3b8"
                   fontSize={13}
-                  tick={{ fill: '#94a3b8', fontSize: 13 }}
+                  tick={(props: { x: number; y: number; payload: { value: string } }) => {
+                    const { x, y, payload } = props;
+                    const entry = data.promedios_pilares.find((p) => p.pilar === payload.value);
+                    return (
+                      <text x={x} y={y} textAnchor="middle" dominantBaseline="central" fontSize={12} fill="#94a3b8">
+                        <tspan x={x} dy="-0.4em">{payload.value}</tspan>
+                        <tspan x={x} dy="1.4em" fill="#8b5cf6" fontWeight="600">{entry ? `${entry.valor}/10` : ''}</tspan>
+                      </text>
+                    );
+                  }}
                 />
                 <PolarRadiusAxis domain={[0, 10]} tick={false} axisLine={false} />
                 <Radar dataKey="valor" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.35} strokeWidth={2} />
