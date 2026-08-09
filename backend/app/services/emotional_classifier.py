@@ -116,15 +116,22 @@ def extract_features(
     # F8: Day of week
     f8 = float(now.weekday())
 
-    # F9: Sentiment (-1 to 1) from text
+    # F9: Sentiment — text note first, then derive from self-reported estado_emocional (1-10 scale)
     nota = checkin_data.get("nota_personal", "") or checkin_data.get("nota", "")
     f9 = _quick_sentiment(nota) if nota else float("nan")
+    if math.isnan(f9):
+        estado = checkin_data.get("estado_emocional")
+        if estado is not None:
+            f9 = round((float(estado) - 5.5) / 4.5, 3)  # maps 1→-1.0, 5.5→0, 10→+1.0
 
-    # F10: keyword_anxiety
-    f10 = 1.0 if _has_anxiety_keywords(nota) else 0.0
+    # F10: keyword_anxiety — note keywords + emocion_principal chip
+    _STRESS_CHIPS = {"estrés", "ansiedad", "agobio"}
+    emocion_chip = (checkin_data.get("emocion_principal") or "").lower()
+    f10 = 1.0 if (_has_anxiety_keywords(nota) or emocion_chip in _STRESS_CHIPS) else 0.0
 
-    # F11: keyword_fatigue
-    f11 = 1.0 if _has_fatigue_keywords(nota) else 0.0
+    # F11: keyword_fatigue — note keywords + emocion_principal chip
+    _FATIGUE_CHIPS = {"cansancio", "tristeza"}
+    f11 = 1.0 if (_has_fatigue_keywords(nota) or emocion_chip in _FATIGUE_CHIPS) else 0.0
 
     # F12: Days since last meditation
     med_days = _days_since_meditation(history)
