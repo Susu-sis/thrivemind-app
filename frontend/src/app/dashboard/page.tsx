@@ -166,11 +166,19 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <RadarChart data={data.promedios_pilares.filter((p) => p.pilar !== 'Sue\u00f1o' && p.pilar !== 'sueno' && p.pilar !== 'horas_sueno')}>
+              <RadarChart
+                data={data.promedios_pilares.filter((p) => p.pilar !== 'Sueño' && p.pilar !== 'sueno' && p.pilar !== 'horas_sueno')}
+                margin={{ top: 10, right: 30, bottom: 10, left: 30 }}
+              >
                 <PolarGrid stroke="#334155" />
-                <PolarAngleAxis dataKey="pilar" stroke="#94a3b8" fontSize={12} />
-                <PolarRadiusAxis domain={[0, 10]} stroke="#475569" />
-                <Radar dataKey="valor" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} />
+                <PolarAngleAxis
+                  dataKey="pilar"
+                  stroke="#94a3b8"
+                  fontSize={13}
+                  tick={{ fill: '#94a3b8', fontSize: 13 }}
+                />
+                <PolarRadiusAxis domain={[0, 10]} tick={false} axisLine={false} />
+                <Radar dataKey="valor" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.35} strokeWidth={2} />
               </RadarChart>
             </ResponsiveContainer>
           </CardContent>
