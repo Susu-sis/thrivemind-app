@@ -19,6 +19,7 @@ interface ConvergencePoint {
   mente: number;
   cuerpo: number;
   entorno: number;
+  sueno?: number;
 }
 
 interface MatrixEntry {
@@ -155,6 +156,7 @@ export default function ConvergenciaPage() {
                 <Line type="monotone" dataKey="mente" stroke="#8b5cf6" strokeWidth={2} name="Mente" dot={false} />
                 <Line type="monotone" dataKey="cuerpo" stroke="#10b981" strokeWidth={2} name="Cuerpo" dot={false} />
                 <Line type="monotone" dataKey="entorno" stroke="#f59e0b" strokeWidth={2} name="Entorno" dot={false} />
+                <Line type="monotone" dataKey="sueno" stroke="#6366f1" strokeWidth={2} strokeDasharray="5 4" name="Sueño" dot={false} connectNulls={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>

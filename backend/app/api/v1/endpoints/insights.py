@@ -179,21 +179,27 @@ async def convergence_dashboard(
     for c in checkins:
         d = c["created_at"][:10]
         if d not in daily:
-            daily[d] = {"mente": [], "cuerpo": [], "entorno": []}
+            daily[d] = {"mente": [], "cuerpo": [], "entorno": [], "sueno": []}
         daily[d]["mente"].append(c.get("estado_emocional", 5))
         daily[d]["cuerpo"].append(c.get("energia_fisica", 5))
         daily[d]["entorno"].append(c.get("conexion_entorno", 5))
+        raw_sleep = c.get("horas_sueno", 0)
+        if raw_sleep:
+            daily[d]["sueno"].append(min(round(raw_sleep * 10 / 8, 1), 10))
 
     convergence_series = []
     for d in sorted(daily.keys()):
         v = daily[d]
-        convergence_series.append({
+        point = {
             "fecha": d,
             "fecha_corta": d[5:],
             "mente": round(sum(v["mente"]) / len(v["mente"]), 1),
             "cuerpo": round(sum(v["cuerpo"]) / len(v["cuerpo"]), 1),
             "entorno": round(sum(v["entorno"]) / len(v["entorno"]), 1),
-        })
+        }
+        if v["sueno"]:
+            point["sueno"] = round(sum(v["sueno"]) / len(v["sueno"]), 1)
+        convergence_series.append(point)
 
     # Cross-pillar Pearson correlations
     import numpy as np
