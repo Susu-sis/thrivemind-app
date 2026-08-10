@@ -197,7 +197,7 @@ export default function CuerpoPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-slate-400">¿El plato de hoy no encaja con cómo te sientes? Ajústalo en base a tu estado actual.</p>
-          <a href="/dashboard/recomendaciones" className="inline-block text-xs text-emerald-400 hover:text-emerald-300 underline-offset-2 hover:underline">Ver acciones personalizadas para hoy →</a>
+          <a href="/dashboard/insights" className="inline-block text-xs text-emerald-400 hover:text-emerald-300 underline-offset-2 hover:underline">Ver acciones personalizadas para hoy →</a>
           <div className="flex gap-2">
             {FITNESS_GOALS.map((g) => (
               <button
