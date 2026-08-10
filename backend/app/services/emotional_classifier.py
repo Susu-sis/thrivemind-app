@@ -209,44 +209,62 @@ def _degradation_level(hrv, sleep, activity) -> str:
 
 # ── Cold-start heuristic classifier (Phase A: <30 check-ins) ─────────────────
 
-def classify_cold_start(features: dict) -> dict:
+_STRESS_CHIPS  = {"estrés", "ansiedad", "agobio"}
+_FATIGUE_CHIPS = {"cansancio", "tristeza"}
+_POSITIVE_CHIPS = {"alegría", "calma", "gratitud", "energía", "esperanza"}
+
+def classify_cold_start(features: dict, checkin_data: dict | None = None) -> dict:
     """
-    Rule-based classification when insufficient data for ML model.
-    Uses simple thresholds on available features.
+    Multi-signal heuristic classifier.
+    Uses extracted features + raw checkin fields (emocion_principal, estado_emocional)
+    for richer, varied classification.
     """
     vals = features["features"]
-    hrv = vals[0]        # F1
-    sleep_dur = vals[4]  # F5
-    mood = None          # Not in feature vector; caller can pass separately
-    sentiment = vals[8]  # F9
-    anxiety = vals[9]    # F10
-    fatigue = vals[10]   # F11
+    hrv       = vals[0]   # F1
+    sleep_dur = vals[4]   # F5
+    sentiment = vals[8]   # F9
+    anxiety   = vals[9]   # F10 — already incorporates emocion chip via extract_features
+    fatigue   = vals[10]  # F11
 
-    # Priority rules (highest severity first)
-    if anxiety == 1.0:
-        state = "estres_agudo"
-        confidence = 0.65
-    elif fatigue == 1.0:
-        state = "fatiga_cronica"
-        confidence = 0.60
-    elif not math.isnan(hrv) and hrv < 20:
-        state = "estres_agudo"
-        confidence = 0.70
-    elif not math.isnan(hrv) and hrv > 75:
-        state = "activacion"
-        confidence = 0.55
-    elif not math.isnan(sleep_dur) and sleep_dur < 5:
-        state = "fatiga_cronica"
-        confidence = 0.60
-    elif not math.isnan(sentiment) and sentiment > 0.5:
-        state = "activacion"
-        confidence = 0.50
-    elif not math.isnan(sentiment) and sentiment < -0.3:
-        state = "estres_agudo"
-        confidence = 0.55
+    raw = checkin_data or {}
+    estado  = raw.get("estado_emocional")          # 1-10, user slider
+    emocion = (raw.get("emocion_principal") or "").lower()
+
+    chip_stress   = emocion in _STRESS_CHIPS
+    chip_fatigue  = emocion in _FATIGUE_CHIPS
+    chip_positive = emocion in _POSITIVE_CHIPS
+    low_estado    = estado is not None and int(estado) <= 3
+    mid_low       = estado is not None and int(estado) <= 5
+    high_estado   = estado is not None and int(estado) >= 8
+    low_sleep     = not math.isnan(sleep_dur) and sleep_dur < 5
+    low_hrv       = not math.isnan(hrv) and hrv < 20
+    high_hrv      = not math.isnan(hrv) and hrv > 70
+
+    # ── Priority cascade (most specific → most general) ─────────────────────
+    if (chip_stress or anxiety == 1.0) and low_estado:
+        state, confidence = "estres_agudo", 0.87   # strongest stress signal combo
+    elif chip_stress or anxiety == 1.0 or low_hrv:
+        state, confidence = "estres_agudo", 0.72
+    elif low_estado and not chip_positive:
+        state, confidence = "estres_agudo", 0.63
+    elif (chip_fatigue or fatigue == 1.0) and low_sleep:
+        state, confidence = "fatiga_cronica", 0.78
+    elif chip_fatigue or fatigue == 1.0:
+        state, confidence = "fatiga_cronica", 0.70
+    elif low_sleep and mid_low:
+        state, confidence = "fatiga_cronica", 0.65
+    elif low_sleep:
+        state, confidence = "fatiga_cronica", 0.58
+    elif (chip_positive or high_hrv) and high_estado:
+        state, confidence = "activacion", 0.68
+    elif high_estado:
+        state, confidence = "activacion", 0.58
+    elif high_hrv and (not math.isnan(sentiment) and sentiment < -0.2):
+        state, confidence = "recuperacion_activa", 0.60
+    elif chip_positive or (not math.isnan(sentiment) and sentiment > 0.4):
+        state, confidence = "equilibrio", 0.56
     else:
-        state = "equilibrio"
-        confidence = 0.45
+        state, confidence = "equilibrio", 0.48
 
     return {
         "state": state,
@@ -418,12 +436,12 @@ def classify_emotional_state(
     features = extract_features(checkin_data, checkin_history, clima, hora)
     n_history = len(checkin_history) if checkin_history else 0
 
-    if force_method == "cold_start" or (force_method is None and n_history < 30):
-        result = classify_cold_start(features)
-        result["reason"] = f"Cold-start mode ({n_history} check-ins, need ≥30 for ML)"
-    else:
+    if force_method == "xgboost" or (force_method is None and n_history >= 30):
         result = classify_xgboost(features)
         result["reason"] = f"XGBoost trained on {n_history} check-ins"
+    else:
+        result = classify_cold_start(features, checkin_data=checkin_data)
+        result["reason"] = f"Heurístico multi-señal ({n_history} check-ins, umbral XGBoost: 30)"
 
     result["n_checkins_available"] = n_history
     result["threshold_for_ml"] = 30

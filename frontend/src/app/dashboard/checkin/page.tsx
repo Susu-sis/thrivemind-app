@@ -83,7 +83,9 @@ export default function CheckinPage() {
         const style = STATE_STYLES[result.state] ?? STATE_STYLES['equilibrio'];
         const pct = Math.round(result.confidence * 100);
         const hint = INTERVENTION_HINTS[result.state] ?? '';
-        const modeLabel = result.method === 'xgboost' ? 'L2 · XGBoost' : 'L1 · Cold-start';
+        const modeLabel = result.method === 'xgboost'
+          ? 'L3 · XGBoost'
+          : 'L1 · Heurístico multi-señal';
         return (
           <div className="space-y-6">
             <Card className={`border-2 ${style.border} ${style.bg}`}>
@@ -117,7 +119,9 @@ export default function CheckinPage() {
                 {/* Badges */}
                 <div className="flex flex-wrap gap-2">
                   <Badge className="bg-slate-700 text-slate-200 text-xs">{modeLabel}</Badge>
-                  <Badge className="bg-slate-700 text-slate-200 text-xs">{result.n_checkins_available} check-ins</Badge>
+                  {result.n_checkins_available > 0 && (
+                    <Badge className="bg-slate-700 text-slate-200 text-xs">{result.n_checkins_available} check-ins</Badge>
+                  )}
                 </div>
 
                 {/* Intervention hint */}

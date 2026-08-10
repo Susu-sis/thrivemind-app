@@ -45,8 +45,7 @@ async def crear_checkin(
     if not resultado:
         return {"success": False, "error": "Error al guardar el check-in"}
 
-    # Force XGBoost (trains on synthetic data) for realistic confidence scores even pre-30 check-ins
-    clasificacion = classify_emotional_state(datos, force_method="xgboost")
+    clasificacion = classify_emotional_state(datos)
     estado = clasificacion["state"]
     clasificacion["intervencion"] = _INTERVENTIONS.get(estado, {})
     return {
